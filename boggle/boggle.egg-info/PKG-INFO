@@ -1,0 +1,15 @@
+Metadata-Version: 1.1
+Name: boggle
+Version: 0.1
+Summary: Welcome to Boggle
+Home-page: UNKNOWN
+Author: Ian Roberts
+Author-email: ian.roberts@cantab.net
+License: LICENSE.txt
+Description-Content-Type: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 3- Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Life Sciences
+Classifier: Programming Language :: Python :: 2.7
