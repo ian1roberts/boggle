@@ -1,14 +1,15 @@
 """Boggle module."""
-from boggle import Grid, Paths
+import grid
+import paths
 
 
 def main(args, wlen):
-    """Initiate boggle app with passed arguments."""
+    """Launch boggle app with passed arguments."""
     nrow = len(args)
     ncol = len(args[0])
     x = ' '.join(args)
-    g = Grid(x, nrow, ncol)
-    p = Paths(g, wlen)
+    g = grid.Grid(x, nrow, ncol)
+    p = paths.Paths(g, wlen)
 
     b = p.paths[0]
     print(b)

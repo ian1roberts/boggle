@@ -4,7 +4,7 @@
 import datetime
 import uuid
 
-from boggle.leaves import Leaves
+import leaves
 
 
 class Tree(object):
@@ -68,7 +68,7 @@ class Tree(object):
         """Build the tree of word stems."""
         # assign root node, seeds tree
         root_moves = self._next_step(self.ori)
-        root_node = Leaves(0, 0, self.ori, root_moves)
+        root_node = leaves.Leaves(0, 0, self.ori, root_moves)
         self.tree[0][0] = root_node
 
         for tier in range(0, self.wlen-1):
@@ -79,8 +79,8 @@ class Tree(object):
                     loc = parent.moves[move]
                     next_moves = self._next_step(loc)
                     self.tree[tier+1][(parent.loc, move,
-                                        str(uuid.uuid4())[:6])] = Leaves(tier+1,
-                                                        parent, loc, next_moves)
+                                      str(uuid.uuid4())[:6])] = leaves.Leaves(
+                                      tier+1, parent, loc, next_moves)
 
     def build_paths(self):
         """Construct tree paths from nodes."""
@@ -94,7 +94,7 @@ class Tree(object):
         for z, key in enumerate(pk):
             if z % 10000 == 0:
                 print("Done {} of {} ({:.2f}%)".format(1+z, len(pk),
-                                                        float(1+z)/len(pk)*100))
+                                                       float(1+z)/len(pk)*100))
             cpath = self.paths[key]
             tnode = self.tree[self.wlen-1][key]
             cpath.append(tnode)
@@ -112,7 +112,7 @@ class Tree(object):
         tn = datetime.datetime.now()
         print(tn)
         print("Done {} of {} ({:.2f}%)".format(1+z, len(pk),
-                                                float(1+z)/len(pk)*100))
+                                               float(1+z)/len(pk)*100))
 
     def build_paths2(self):
         """Optimized path construction."""

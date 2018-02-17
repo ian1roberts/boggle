@@ -1,5 +1,5 @@
 """Boggle word puzzle solver."""
-import boggle
+import tree
 
 
 class Board(object):
@@ -19,8 +19,8 @@ class Board(object):
 
     def _build_tri(self):
         """Construct data structure parent --> child moves."""
-        self.tree = boggle.Tree(self.ori, self.wlen, self.grid.nrow,
-                                self.grid.ncol)
+        self.tree = tree.Tree(self.ori, self.wlen, self.grid.nrow,
+                              self.grid.ncol)
 
     def make_words(self):
         """Make words."""
