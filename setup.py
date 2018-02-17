@@ -17,7 +17,7 @@ setup(
     version='%s' % __version__,
     author='Ian Roberts',
     author_email='ian.roberts@cantab.net',
-    packages=find_packages(exclude=['tests*', 'docs']),
+    packages=find_packages(exclude=['test*', 'docs']),
     include_package_data=True,
     license='LICENSE.txt',
     description=long_description,

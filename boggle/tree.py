@@ -4,7 +4,8 @@
 import datetime
 import uuid
 
-import leaves
+
+from boggle.leaves import Leaves
 
 
 class Tree(object):
@@ -68,7 +69,7 @@ class Tree(object):
         """Build the tree of word stems."""
         # assign root node, seeds tree
         root_moves = self._next_step(self.ori)
-        root_node = leaves.Leaves(0, 0, self.ori, root_moves)
+        root_node = Leaves(0, 0, self.ori, root_moves)
         self.tree[0][0] = root_node
 
         for tier in range(0, self.wlen-1):
@@ -79,7 +80,7 @@ class Tree(object):
                     loc = parent.moves[move]
                     next_moves = self._next_step(loc)
                     self.tree[tier+1][(parent.loc, move,
-                                      str(uuid.uuid4())[:6])] = leaves.Leaves(
+                                      str(uuid.uuid4())[:6])] = Leaves(
                                       tier+1, parent, loc, next_moves)
 
     def build_paths(self):

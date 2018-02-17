@@ -3,19 +3,16 @@
 
 import sys
 import argparse
-import boggle
+
+from boggle.bogglem import main
 
 parser = argparse.ArgumentParser(description="Boggle word puzzle solver")
 parser.add_argument('-l', '--wordlength',
-                    help='Number of letters in word to search',
-                    required=False, default=3)
+                    help='Number of letters in word to search', default=3)
+parser.add_argument('words', help='Add space separated words', nargs='*')
 
 
-def run_boggle(args=None):
+def run_boggle():
     """Launch application via this main routine."""
-    if args is None:
-        args = sys.argv[1:]
-
-    print("args: {}".format(args))
-
-    boggle.main(args)
+    args = parser.parse_args()
+    main(args.words, int(args.wordlength))

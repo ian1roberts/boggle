@@ -2,7 +2,7 @@
 
 
 import unittest
-from boggle import grid
+from boggle.grid import Grid
 
 
 class Test(unittest.TestCase):
@@ -17,7 +17,7 @@ class Test(unittest.TestCase):
 
         # expected
         expected = [['c', 'a', 't'], ['d', 'o', 'g'], ['h', 'o', 'g']]
-        observed = grid.Grid(letters, nrow, ncol)
+        observed = Grid(letters, nrow, ncol)
 
         self.assertListEqual(observed.grid, expected)
 

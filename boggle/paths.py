@@ -1,7 +1,7 @@
 """Build boggle paths."""
 
 
-import board
+from boggle.board import Board
 
 
 class Paths(object):
@@ -35,7 +35,7 @@ class Paths(object):
         #                               range(self.grid.ncol)):
         #    grids.append(Board((x,y), self.grid, self.maxlen))
 
-        grids.append(board.Board((0, 0), self.grid, self.maxlen,
-                                 self.dictionary))
+        grids.append(Board((0, 0), self.grid, self.maxlen,
+                           self.dictionary))
 
         self.paths = grids

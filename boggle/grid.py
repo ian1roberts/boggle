@@ -1,5 +1,6 @@
 """Set up grid."""
 
+
 class Grid(object):
     """Setup the word grid coordinates."""
 
