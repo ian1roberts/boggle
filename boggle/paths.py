@@ -1,6 +1,7 @@
 """Build boggle paths."""
 
-
+import itertools
+from multiprocessing import Pool
 from boggle.board import Board
 
 
@@ -11,11 +12,16 @@ class Paths(object):
         """Pass in grid and max length of query word."""
         self.grid = grid
 
-        self.maxlen = wlen
+        self.fixed = False
+        if wlen > 0:
+            self.fixed = True
+
+        self.maxlen = len(grid) + 1  # upper bound for wordlength, not fixed
         self.minlen = mlen
+        self.wlen = wlen  # fixed wordlengths only
 
         self.get_dictionary()
-        self.walk_grid()
+        self.get_search_space()
 
     def get_dictionary(self, fpath='/usr/share/dict/words'):
         """Build local dictionary of words."""
@@ -24,18 +30,34 @@ class Paths(object):
 
         self.dictionary = set([x.upper().strip() for x in words])
 
+    def get_search_space(self):
+        """Build search coordinates and wordlength list.
+
+        If working on a fixed board, then wordlength is fixed.
+
+        Returns:
+            search_space (w, (x, y)): x, y start coord, w is wordlength.
+
+        """
+        coords = [(i, j) for x in self.grid.coords for (i, j) in x]
+
+        if self.fixed:
+            self.search_space = ((self.wlen, xy) for xy in coords)
+        else:
+            wlenrange = range(self.minlen, self.maxlen)
+            self.search_space = itertools.product(wlenrange, coords)
+
     def walk_grid(self):
-        """For a fixed word length, walk grid."""
-        # grid = original letters
-        # wlen = length of word to find
-        # x,y are starting coordinates for search
+        """Compute the boggle paths for a fixed or flexible wordlength."""
+        p = Pool(4)
 
-        grids = []
-        # for (x,y) in itertools.product(range(self.grid.nrow),
-        #                               range(self.grid.ncol)):
-        #    grids.append(Board((x,y), self.grid, self.maxlen))
+        searches = []
+        for w, (x, y) in self.search_space:
+            searches.append([(x, y), self.grid, w, self.dictionary])
 
-        grids.append(Board((0, 0), self.grid, self.maxlen,
-                           self.dictionary))
+        self.paths = [p.apply(_do_search, args=(x, )) for x in searches]
 
-        self.paths = grids
+
+def _do_search(x):
+    xy, grid, wlen, dictionary = x
+    return Board(xy, grid, wlen, dictionary)

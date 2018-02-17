@@ -21,8 +21,7 @@ class Board(object):
 
     def _build_tri(self):
         """Construct data structure parent --> child moves."""
-        self.tree = Tree(self.ori, self.wlen, self.grid.nrow,
-                         self.grid.ncol)
+        self.tree = Tree(self.ori, self.wlen, self.grid)
 
     def make_words(self):
         """Make words."""

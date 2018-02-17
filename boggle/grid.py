@@ -2,7 +2,24 @@
 
 
 class Grid(object):
-    """Setup the word grid coordinates."""
+    """Represent the boggle board as a letter grid.
+
+    Args:
+        letters ("word1 word2 ..."): a space separated string of words.
+        nrow (int): number of rows in boggle grid.
+        ncol (int): number of columns in boggle grid.
+
+    Attributes:
+        nrow (int): number of rows
+        ncol (int): number of columns
+        coords ([[(r0, c0), (r0, c1), (r0, c3)],[ ... ]]): grid coordinates
+        board (str): string representation of grid
+        grid ([['a', 'b', 'c'], [ ... ]]): grid letters
+
+    Example:
+        grid = Grid('cat dog hog', 3, 3)
+
+    """
 
     def __init__(self, letters, nrow, ncol):
         """Instantiate with letters, number of rows and columns."""
@@ -25,13 +42,17 @@ class Grid(object):
 
         return x
 
+    def __len__(self):
+        """Return number of characters in grid."""
+        return (len(self.board)-self.nrow)
+
     def __getitem__(self, key):
         """Return items."""
         r, c = key
         return self.grid[r][c]
 
     def parse_letters(self, letters):
-        """Split on space, listify."""
+        """Split on space, listify words."""
         self.grid = []
         if not isinstance(letters, list):
             items = letters.split(' ')
@@ -42,7 +63,7 @@ class Grid(object):
             self.grid.append(list(item))
 
     def layout(self):
-        """Set out grid."""
+        """Layout the board coordinate system. Upper left is (0, 0)."""
         coords = []
         for i in range(0, self.nrow):
             for j in range(0, self.ncol):
@@ -56,7 +77,7 @@ class Grid(object):
             self.coords.append(stack)
 
     def draw(self):
-        """Drawer the grid."""
+        """Draw the board in words."""
         grid = ''
         for i in self.grid:
             row = ''.join(i) + '\n'

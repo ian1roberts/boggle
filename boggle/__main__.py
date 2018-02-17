@@ -1,9 +1,7 @@
 """Application wrapper for boggle."""
 
 
-import sys
 import argparse
-
 from boggle.bogglem import main
 
 parser = argparse.ArgumentParser(description="Boggle word puzzle solver")

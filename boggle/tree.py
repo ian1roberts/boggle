@@ -15,12 +15,11 @@ class Tree(object):
                's': (1, 0),  'sw': (1, -1), 'w': (0, -1), 'nw': (-1, -1)
                }
 
-    def __init__(self, ori, wlen, nrow, ncol):
+    def __init__(self, ori, wlen, grid):
         """Instantiate class."""
         self.ori = ori
         self.wlen = wlen
-        self.nrow = nrow  # grid dimensions
-        self.ncol = ncol
+        self.grid = grid
         # {tier3:{p1:[x1y1,x2y2], p2
         self.tree = dict(zip([x for x in range(0, wlen)],
                              [{} for x in range(0, wlen)]))
@@ -39,12 +38,12 @@ class Tree(object):
         vmoves = []
 
         for m, (i, j) in self.COMPASS.items():
-            next_R = R+i
-            next_C = C+j
+            next_r = R+i
+            next_c = C+j
 
-            if next_R < 0 or next_C < 0:
+            if next_r < 0 or next_c < 0:
                 continue
-            if next_R >= self.nrow or next_C >= self.ncol:
+            if next_r >= self.grid.nrow or next_c >= self.grid.ncol:
                 continue
 
             vmoves.append(m)
