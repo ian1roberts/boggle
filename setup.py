@@ -1,8 +1,6 @@
-'''
-Created on 12 Oct 2017
+"""Boggle setup module."""
 
-@author: ian
-'''
+
 from codecs import open
 from os import path
 
@@ -28,7 +26,7 @@ setup(
         'Intended Audience :: Developers',
         'Topic :: Life Sciences',
         'Programming Language :: Python :: 3',
-    ],                           
+    ],
     install_requires=[
     ],
     entry_points={
