@@ -1,6 +1,4 @@
 """Build boggle paths."""
-
-import itertools
 from multiprocessing import Pool
 from boggle.board import Board
 
@@ -32,29 +30,26 @@ class Paths(object):
         self.dictionary = set([x.upper().strip() for x in words])
 
     def get_search_space(self):
-        """Build search coordinates and wordlength list.
+        """Build search space wordlength list.
 
         If working on a fixed board, then wordlength is fixed.
 
         Returns:
-            search_space (w, (x, y)): x, y start coord, w is wordlength.
+            search_space (w1, w2, ...):  w is a wordlength.
 
         """
-        coords = [(i, j) for x in self.grid.coords for (i, j) in x]
-
         if self.fixed:
-            self.search_space = ((self.wlen, xy) for xy in coords)
+            self.search_space = (self.wlen, )
         else:
-            wlenrange = range(self.minlen, self.maxlen)
-            self.search_space = itertools.product(wlenrange, coords)
+            self.search_space = range(self.minlen, self.maxlen)
 
     def walk_grid(self):
         """Compute the boggle paths for a fixed or flexible wordlength."""
         p = Pool(4)
 
         searches = []
-        for w, (x, y) in self.search_space:
-            searches.append([(x, y), self.grid, w, self.dictionary])
+        for w in self.search_space:
+            searches.append([w, self.grid, self.dictionary])
 
         results = [p.apply(_do_search, args=(x, )) for x in searches]
         self.paths = []
@@ -63,5 +58,5 @@ class Paths(object):
 
 
 def _do_search(x):
-    xy, grid, wlen, dictionary = x
-    return Board(xy, grid, wlen, dictionary)
+    w, grid, dictionary = x
+    return Board(w, grid, dictionary)

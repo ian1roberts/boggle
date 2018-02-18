@@ -11,9 +11,8 @@ class Tree(object):
                's': (1, 0),  'sw': (1, -1), 'w': (0, -1), 'nw': (-1, -1)
                }
 
-    def __init__(self, ori, wlen, grid):
+    def __init__(self, wlen, grid):
         """Instantiate class."""
-        self.ori = ori
         self.wlen = wlen
         self.grid = grid
         # {tier3:{p1:[x1y1,x2y2], p2
@@ -21,7 +20,8 @@ class Tree(object):
                              [{} for x in range(0, wlen)]))
         # Route through grid
         self.compute_tree()
-        self.build_paths()
+        self.build_paths_graph()
+        self.compute_all_paths()
 
     @property
     def number_paths(self):
@@ -102,8 +102,8 @@ class Tree(object):
         """
         # assign root node, seeds tree from letter in grid that all words will
         # be computed.
-        root_moves = self._next_step(self.ori)  # compute moves from root node.
-        root_node = Leaves(0, 0, self.ori, root_moves)  # No parent leaf node.
+        root_moves = self._next_step((0, 0))  # compute moves from root node.
+        root_node = Leaves(0, 0, (0, 0), root_moves)  # No parent leaf node.
 
         # Tree.tree atrribute stores the word graph of moves through the grid.
         # Initiate graph with root node. Index is [tier][Leaf]
@@ -124,11 +124,11 @@ class Tree(object):
                     self.tree[tier+1][(parent.loc, move, node_uuid)] = Leaves(
                                       tier+1, parent, loc, next_moves)
 
-    def build_paths(self):
+    def build_paths_graph(self):
         """Optimized path building for improved speed."""
         key_list = [list(self.tree[x].keys()) for x in range(1, self.wlen)]
 
-        path_dict = {self.ori: set()}
+        path_dict = {(0, 0): set()}
         for keys in key_list:
             for key in keys:
                 src = key[0]
@@ -153,17 +153,22 @@ class Tree(object):
             for _v in v:
                 path_set.add((k, _v))
 
-        G = nx.Graph()
-        G.add_nodes_from(node_set)
-        G.add_edges_from(path_set)
+        self.graph = nx.Graph()
+        self.graph.add_nodes_from(node_set)
+        self.graph.add_edges_from(path_set)
 
-        _paths = find_paths_in_graph(G, self.ori, self.wlen-1)
-        paths = set()
-        for i in _paths:
-            paths.add(tuple(i))
+    def compute_all_paths(self):
+        """Compute paths for all origins in grid."""
+        all_paths = set()
+        coords = [x for sublist in self.grid.coords for x in sublist]
 
-        self.paths = paths
-        self.graph = G
+        for coord in coords:
+            _paths = find_paths_in_graph(self.graph, coord, self.wlen-1)
+
+            for i in _paths:
+                all_paths.add(tuple(i))
+
+        self.paths = all_paths
 
 
 def find_paths_in_graph(g, u, n):

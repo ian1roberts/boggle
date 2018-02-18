@@ -1,34 +1,30 @@
 """Boggle word puzzle solver."""
-
-
 from boggle.tree import Tree
 
 
 class Board(object):
     """Perform word search - Class provides letters for the Board."""
 
-    def __init__(self, xy, grid, wlen, dictionary):
+    def __init__(self, wlen, grid, dictionary):
         """Create board."""
-        self.ori = xy   # set the initial coordinate for word building
-        self.grid = grid
         self.wlen = wlen
-
+        self.grid = grid
         self.dictionary = dictionary
 
-        self._build_tri()
+        self._build_tree()
         self.make_words()
         self.filter_valid()
 
-    def _build_tri(self):
+    def _build_tree(self):
         """Construct data structure parent --> child moves."""
-        self.tree = Tree(self.ori, self.wlen, self.grid)
+        self.tree = Tree(self.wlen, self.grid)
 
     def make_words(self):
         """Make words."""
         words = {}
-        for v in self.tree.paths:
-            letters = [self.grid[x] for x in v]
-            words[v] = ''.join(letters)
+        for path_coords in self.tree.paths:
+            letters = [self.grid[x] for x in path_coords]
+            words[path_coords] = ''.join(letters)
         self.words = words
 
     def filter_valid(self):
@@ -40,4 +36,3 @@ class Board(object):
 
         for bw in bad_words:
             del self.words[bw]
-            # del self.tree.paths[bw]
