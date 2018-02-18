@@ -14,10 +14,12 @@ class Test(unittest.TestCase):
                  ['h', 'o', 'g']], 3, 3)
 
     def test_instantiate_tree(self):
-        """Test build tree for single fixed board."""
+        """Test build tree for single fixed grid."""
         t = Tree((0, 0), 3, Test.grid)
+        observed = t.number_paths
+        expected = 18  # paths for this grid
 
-        print(t)
+        self.assertEquals(observed, expected)
 
 
 if __name__ == "__main__":

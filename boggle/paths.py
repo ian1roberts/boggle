@@ -22,6 +22,7 @@ class Paths(object):
 
         self.get_dictionary()
         self.get_search_space()
+        self.walk_grid()
 
     def get_dictionary(self, fpath='/usr/share/dict/words'):
         """Build local dictionary of words."""
@@ -55,7 +56,10 @@ class Paths(object):
         for w, (x, y) in self.search_space:
             searches.append([(x, y), self.grid, w, self.dictionary])
 
-        self.paths = [p.apply(_do_search, args=(x, )) for x in searches]
+        results = [p.apply(_do_search, args=(x, )) for x in searches]
+        self.paths = []
+        for result in results:
+            self.paths.append(result)
 
 
 def _do_search(x):

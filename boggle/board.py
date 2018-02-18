@@ -26,9 +26,9 @@ class Board(object):
     def make_words(self):
         """Make words."""
         words = {}
-        for k, v in self.tree.paths.items():
-            letters = [self.grid[x.loc] for x in v]
-            words[k] = ''.join(letters)
+        for v in self.tree.paths:
+            letters = [self.grid[x] for x in v]
+            words[v] = ''.join(letters)
         self.words = words
 
     def filter_valid(self):
@@ -40,4 +40,4 @@ class Board(object):
 
         for bw in bad_words:
             del self.words[bw]
-            del self.tree.paths[bw]
+            # del self.tree.paths[bw]
