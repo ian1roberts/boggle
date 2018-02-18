@@ -1,7 +1,7 @@
 """Build boggle paths."""
 from multiprocessing import Pool
 from boggle.board import Board
-
+from codecs import open
 
 class Paths(object):
     """This is the Path class."""
@@ -24,7 +24,7 @@ class Paths(object):
 
     def get_dictionary(self, fpath='/usr/share/dict/words'):
         """Build local dictionary of words."""
-        with open(fpath) as f:
+        with open(fpath, encoding='utf-8') as f:
             words = f.read().splitlines()
 
         self.dictionary = set([x.upper().strip() for x in words])

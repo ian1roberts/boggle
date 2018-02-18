@@ -15,7 +15,7 @@ class Test(unittest.TestCase):
 
     def test_instantiate_tree(self):
         """Test build tree for single fixed grid."""
-        t = Tree((0, 0), 3, Test.grid)
+        t = Tree(3, Test.grid)
         observed = t.number_paths
         expected = 18  # paths for this grid
 

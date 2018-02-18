@@ -18,13 +18,13 @@ class Test(unittest.TestCase):
 
     def test_instantiate_board(self):
         """Test build board for single fixed wlen path."""
-        b = Board((0, 0), Test.p3.grid, 3, Test.p3.dictionary)
+        b = Board(3, Test.p3.grid, Test.p3.dictionary)
         self.assertEquals(len(b.words), 7)
 
     def test_tlw_00(self):
         """Test all three letter words from 0,0."""
         expect = set(['cat', 'cad', 'cot', 'cod', 'cog', 'coo'])
-        b = Board((0, 0), Test.p3.grid, 3, Test.p3.dictionary)
+        b = Board(3, Test.p3.grid, Test.p3.dictionary)
 
         observed = set(b.words.values())
         self.assertSetEqual(expect, observed)
