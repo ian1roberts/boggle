@@ -27,8 +27,8 @@ setup(
         'Topic :: Life Sciences',
         'Programming Language :: Python :: 3',
     ],
-    install_requires=[
-    ],
+    install_requires=['networkx', 'nose'
+                      ],
     entry_points={
         'console_scripts': ['boggle=boggle.__main__:run_boggle'],
         },
