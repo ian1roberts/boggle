@@ -36,3 +36,5 @@ class Board(object):
 
         for bw in bad_words:
             del self.words[bw]
+
+# To do - parse results in Board before rturning

@@ -58,8 +58,8 @@ def main(args, wlen=0):
 if __name__ == "__main__":
     # import sys
     # sys.path.insert(0, "/home/ian/workspace/boggle")
-    # a = main(['cat', 'dog', 'hog'], 0)
+    a = main(['cat', 'dog', 'hog'], 0)
     # print('\n' * 2)
     # b = main(['cat', 'dog', 'hog'], 4)
     # print('\n' * 2)
-    a = main(['sho', 'acw', 'sed'], 0)
+    c = main(['sho', 'acw', 'sed'], 0)
