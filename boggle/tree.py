@@ -1,5 +1,6 @@
 """Tree module is the main program."""
 import networkx as nx
+import itertools
 
 
 class Tree(object):
@@ -13,22 +14,11 @@ class Tree(object):
         """Instantiate class."""
         self.wlen = wlen
         self.grid = grid
-        # {tier3:{p1:[x1y1,x2y2], p2
-        self.tree = dict(zip([x for x in range(0, wlen)],
-                             [{} for x in range(0, wlen)]))
+
         # Route through grid
         self.compute_tree()
         self.build_paths_graph()
         self.compute_all_paths()
-
-    @property
-    def number_paths(self):
-        """Return number of unique terminal nodes, equals number of paths."""
-        return (len(set(self.tree[self.wlen-1].keys())))
-
-    def __getitem__(self, key):
-        """Return item from object."""
-        return self.tree[key]
 
     def _get_valid_moves(self, loc):
         """Compute valid compass points from an x, y location."""
@@ -117,24 +107,36 @@ def find_paths_in_graph(g, u, n):
     return paths
 
 
+def opt_path_calculation(g):
+    """Optimized all paths calculation."""
+    all_paths = []
+    for (source, sink) in itertools.product(g.nodes, g.nodes):
+        for path in nx.all_simple_paths(g, source=source, target=sink,
+                                        cutoff=9):
+            all_paths.append(path)
+    return all_paths
+
+
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, "/home/ian/workspace/boggle")
 
     from boggle.grid import Grid
     import matplotlib.pyplot as plt
-
-    grid = Grid([['c', 'a', 't'],
-                 ['d', 'o', 'g'],
-                 ['h', 'o', 'g']], 3, 3)
+    # d = main(['shop', 'acwe', 'sted', 'fobe'], 0)
+    grid = Grid([['m', 'e', 't', 'e', 't'],
+                 ['e', 'e', 'y', 'm', 'l'],
+                 ['d', 'n', 'r', 'h', 'a'],
+                 ['i', 'e', 'u', 'u', 't'],
+                 ['c', 'i', 'k', 'l', 'p']], 5, 5)
 
     t = Tree(3, grid)
 
-# Examine Tree graphs
+    # Examine Tree graphs
     gcoords = [x for y in grid.coords for x in y]
     ggrid = [x for y in grid.grid for x in y]
     pos = dict((n, n) for n in t.graph.nodes())
     labels = dict(zip(gcoords, ggrid))
     nx.draw_networkx(t.graph, pos=pos, labels=labels, node_size=900)
-    plt.savefig('hierarchy.png')
+    plt.savefig('hierarch1.png')
     plt.close()

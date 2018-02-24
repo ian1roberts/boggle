@@ -18,7 +18,7 @@ def main(args, wlen=0):
     in the grid.
 
     Args:
-        args (['word1', 'word2', '...']): list of bad_words.
+        args (['word1', 'word2', '...']): list of board_words.
         wlen (int): length of result words.
 
     Example:
@@ -36,20 +36,13 @@ def main(args, wlen=0):
     wlens = set([i.wlen for i in p.paths])
 
     # summarize all_words
-    all_words = dict(zip(wlens, [set() for _ in wlens]))
+    p.all_words = dict(zip(wlens, [set() for _ in wlens]))
+    p.all_words_dedup = dict(zip(wlens, [set() for _ in wlens]))
 
     for i in p.paths:
         for k, v in i.words.items():
-            all_words[len(v)].add((k, v))
-
-    p.all_words = all_words
-
-    all_words_dedup = dict(zip(wlens, [set() for _ in wlens]))
-    for k, v in all_words.items():
-        for x, y in v:
-            all_words_dedup[k].add(y)
-
-    p.all_words_dedup = all_words_dedup
+            p.all_words[len(v)].add((k, v))
+            p.all_words_dedup[len(v)].add(v)
 
     print("Finishing ...")
     return(p)
@@ -62,4 +55,5 @@ if __name__ == "__main__":
     # print('\n' * 2)
     # b = main(['cat', 'dog', 'hog'], 4)
     # print('\n' * 2)
-    c = main(['sho', 'acw', 'sed'], 0)
+    # c = main(['sho', 'acw', 'sed'], 0)
+    d = main(['shop', 'acwe', 'sted', 'fobe'], 0)
