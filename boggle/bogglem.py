@@ -1,11 +1,39 @@
 """Boggle module."""
-
-
+import multiprocessing
+from codecs import open
 from boggle.grid import Grid
-from boggle.paths import Paths
+from boggle.moves import Moves
+from boggle.paths import make_digraph, compute_all_paths
 
 
-def main(args, wlen=0):
+MAX_WLEN = 10
+
+
+def _do_compute(params):
+    ori, grid, tree, wlen, dictionary = params
+    xy_tree = make_digraph(ori, grid, tree, wlen)
+    xy_paths = compute_all_paths(xy_tree)
+
+    ori_words = dict()
+    for k in xy_paths:
+        kw = [xy_tree.nodes[l]['letter'] for l in k]
+        while len(kw) > 2:
+            i = len(kw)
+            if i not in ori_words:
+                ori_words[i] = set()
+            fw = "".join(kw)
+            # rw = fw[::-1]
+            if fw.upper() in dictionary:
+                ori_words[i].add(fw)
+            # if rw.upper() in dictionary:
+            #     ori_words[i].add(rw)
+            kw.pop()
+
+    ori_data = {'loc': ori, 'tree': xy_tree, 'words': ori_words}
+    return(ori_data)
+
+
+def main(args, wlen, fpath='/usr/share/dict/words'):
     """Launch boggle app with passed arguments.
 
     Boggle searches a word grid for all words of length `wlen`.
@@ -26,34 +54,49 @@ def main(args, wlen=0):
         b = main(['cat', 'dog', 'hog'], 0)
 
     """
-    print("Starting ...")
+    # Parse dictionary
+    with open(fpath, encoding='utf-8') as f:
+        words = f.read().splitlines()
+    dictionary = set([x.upper().strip() for x in words])
+
+    # Parse command line arguments
     nrow = len(args)
     ncol = len(args[0])
     x = ' '.join(args)
-    g = Grid(x, nrow, ncol)
-    p = Paths(g, wlen)
+    grid = Grid(x, nrow, ncol)
+    moves = Moves(grid)
 
-    wlens = set([i.wlen for i in p.paths])
+    # Word checking
+    if wlen == 0 or wlen > MAX_WLEN:
+        wlen = MAX_WLEN
 
-    # summarize all_words
-    p.all_words = dict(zip(wlens, [set() for _ in wlens]))
-    p.all_words_dedup = dict(zip(wlens, [set() for _ in wlens]))
+    p = multiprocessing.Pool(4)
+    all_words = dict()
 
-    for i in p.paths:
-        for k, v in i.words.items():
-            p.all_words[len(v)].add((k, v))
-            p.all_words_dedup[len(v)].add(v)
+    xargs = []
+    for coord in grid:
+        xargs.append((coord, grid, moves, wlen, dictionary))
 
-    print("Finishing ...")
-    return(p)
+    board_data = {'grid': grid, 'moves': moves}
+    results = p.map(_do_compute, xargs)
+    for result in results:
+        board_data[result['loc']] = result
+        for k, v in result['words'].items():
+            if k not in all_words:
+                all_words[k] = set()
+            all_words[k] = all_words[k].union(v)
+
+    # Return all objects
+
+    return (all_words, board_data)
 
 
 if __name__ == "__main__":
     # import sys
     # sys.path.insert(0, "/home/ian/workspace/boggle")
-    a = main(['cat', 'dog', 'hog'], 0)
+    # a = main(['cat', 'dog', 'hog'], 0)
     # print('\n' * 2)
     # b = main(['cat', 'dog', 'hog'], 4)
     # print('\n' * 2)
-    # c = main(['sho', 'acw', 'sed'], 0)
-    d = main(['shop', 'acwe', 'sted', 'fobe'], 0)
+    c, c_data = main(['sho', 'acw', 'sed'], 0)
+    # d = main(['shop', 'acwe', 'sted', 'fobe'], 0)

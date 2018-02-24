@@ -31,6 +31,7 @@ class Grid(object):
         # r,c coordinated grid
         self.layout()
         self.draw()
+        self.search_space()
 
     def __str__(self):
         """Print representation."""
@@ -50,6 +51,12 @@ class Grid(object):
         """Return items."""
         r, c = key
         return self.grid[r][c]
+
+    def __iter__(self):
+        """Step over letters row by column."""
+        for i in range(0, self.nrow):
+            for j in range(0, self.ncol):
+                yield (i, j)
 
     def parse_letters(self, letters):
         """Split on space, listify words."""
@@ -84,3 +91,12 @@ class Grid(object):
             grid += row
 
         self.board = grid
+
+    def search_space(self):
+        """Compute search space. Diagnonal matrix."""
+        upper_tri = []
+        for n in self:
+            if n[0] <= n[1]:
+                upper_tri.append(n)
+
+        self.upper_tri = upper_tri
