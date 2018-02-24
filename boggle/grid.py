@@ -21,76 +21,55 @@ class Grid(object):
 
     """
 
-    def __init__(self, letters, nrow, ncol):
+    def __init__(self, letters):
         """Instantiate with letters, number of rows and columns."""
-        self.nrow = nrow
-        self.ncol = ncol
-
-        # populate the grid
         self.parse_letters(letters)
-        # r,c coordinated grid
         self.layout()
-        self.draw()
         self.search_space()
 
     def __str__(self):
         """Print representation."""
-        x = ''
-        for i in range(0, self.nrow):
-            for j in range(0, self.ncol):
-                x += '(%s, %s) ' % (str(i), str(j))
-            x += '\n'
-
-        return x
+        txt = ''
+        for y in range(self.nrow-1, -1, -1):
+            row = self.grid[y]
+            a = ''
+            for x, l in enumerate(row):
+                a += '{}({}) '.format((x, y), self[(x, y)])
+            txt += (a + '\n')
+        return(txt)
 
     def __len__(self):
         """Return number of characters in grid."""
-        return (len(self.board)-self.nrow)
+        return (len(self._chars))
 
     def __getitem__(self, key):
         """Return items."""
-        r, c = key
-        return self.grid[r][c]
+        x, y = key
+        return self.grid[y][x]
 
     def __iter__(self):
         """Step over letters row by column."""
-        for i in range(0, self.nrow):
-            for j in range(0, self.ncol):
-                yield (i, j)
+        for x in range(0, self.ncol):
+            for y in range(0, self.nrow):
+                yield (x, y)
 
     def parse_letters(self, letters):
-        """Split on space, listify words."""
+        """Split on space, listify words. Set up (x, y) coords."""
+        self._chars = letters.replace(" ", "")
         self.grid = []
-        if not isinstance(letters, list):
-            items = letters.split(' ')
-        else:
-            items = letters
+        items = letters.split(" ")
+        self.nrow = len(items)     # maps to y
+        self.ncol = len(items[0])  # maps to x
 
-        for item in items:
+        for item in reversed(items):
             self.grid.append(list(item))
 
     def layout(self):
-        """Layout the board coordinate system. Upper left is (0, 0)."""
-        coords = []
-        for i in range(0, self.nrow):
-            for j in range(0, self.ncol):
-                coords.append((i, j))
-
-        self.coords = []
-        while coords:
-            stack = []
-            for i in range(self.nrow):
-                stack.append(coords.pop(0))
-            self.coords.append(stack)
-
-    def draw(self):
-        """Draw the board in words."""
-        grid = ''
-        for i in self.grid:
-            row = ''.join(i) + '\n'
-            grid += row
-
-        self.board = grid
+        """Layout the board coordinate system. lower left is (0, 0)."""
+        self.coords = [xy for xy in self]
+        self.board = dict()
+        for x, y in self.coords:
+            self.board[(x, y)] = self[(x, y)]
 
     def search_space(self):
         """Compute search space. Diagnonal matrix."""

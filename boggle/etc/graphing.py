@@ -1,31 +1,40 @@
 ##
 ## From tree.py
 ##
-# from networkx.drawing.nx_agraph import graphviz_layout
-# import matplotlib.pyplot as plt
-# if __name__ == "__main__":
-#     import sys
-#     sys.path.insert(0, "/home/ian/workspace/boggle")
-#
-#     from boggle.grid import Grid
-#     import matplotlib.pyplot as plt
-#     # d = main(['shop', 'acwe', 'sted', 'fobe'], 0)
-#     grid = Grid([['m', 'e', 't', 'e', 't'],
-#                  ['e', 'e', 'y', 'm', 'l'],
-#                  ['d', 'n', 'r', 'h', 'a'],
-#                  ['i', 'e', 'u', 'u', 't'],
-#                  ['c', 'i', 'k', 'l', 'p']], 5, 5)
-#
-#     t = Tree(3, grid)
-#
-#     # Examine Tree graphs
-#     gcoords = [x for y in grid.coords for x in y]
-#     ggrid = [x for y in grid.grid for x in y]
-#     pos = dict((n, n) for n in t.graph.nodes())
-#     labels = dict(zip(gcoords, ggrid))
-#     nx.draw_networkx(t.graph, pos=pos, labels=labels, node_size=900)
-#     plt.savefig('hierarch1.png')
-#     plt.close()
+import networkx as nx
+from networkx.drawing.nx_agraph import graphviz_layout
+import matplotlib.pyplot as plt
+
+#Examine moves graphs
+pos = dict((n, n) for n in moves.graph.nodes())
+nx.draw_networkx(moves.graph, pos=pos, labels=grid.board, node_size=900)
+plt.savefig('hierarch1.png')
+plt.close()
+
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+    from networkx.drawing.nx_agraph import graphviz_layout
+    from boggle.grid import Grid
+    from boggle.moves import Moves
+
+    grid = Grid('sho acw sed')
+    moves = Moves(grid)
+
+    xy_tree = make_digraph((0, 2), grid, moves, 9)
+    z = compute_all_paths(xy_tree)
+    # labels = {}
+    # for n in xy_tree.nodes():
+    #     labels[n] = "{}".format(xy_tree.nodes[n]['letter'])
+    #
+    # plt.title('draw_g_networkx')
+    # pos = graphviz_layout(xy_tree, prog='dot')
+    # nx.draw_networkx_labels(xy_tree, pos=pos, labels=labels, font_size=6)
+    # nx.draw(xy_tree, pos=pos, with_labels=False, arrows=True,
+    #         node_size=350, font_size=6)
+    # plt.savefig('nx_g_test.png')
+    # plt.close()
+
+
 
 ##
 ## From script.py

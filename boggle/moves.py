@@ -5,8 +5,8 @@ import networkx as nx
 class Moves(object):
     """Make `Moves` class with origin, wordlength number of rows, cols."""
 
-    COMPASS = {'n': (-1, 0), 'ne': (-1, 1), 'e': (0, 1),  'se': (1, 1),
-               's': (1, 0),  'sw': (1, -1), 'w': (0, -1), 'nw': (-1, -1)
+    COMPASS = {'n': (0, 1), 'ne': (1, 1), 'e': (1, 0),  'se': (1, -1),
+               's': (0, -1),  'sw': (-1, -1), 'w': (-1, 0), 'nw': (-1, 1)
                }
 
     def __init__(self, grid):
@@ -19,20 +19,20 @@ class Moves(object):
 
     def _get_valid_moves(self, loc):
         """Compute valid compass points from an x, y location."""
-        R, C = loc
+        x, y = loc
         vmoves = []  # valid moves store
 
         # Iterate over all (8) compass moves and store the
         # the ones that are in range
-        for m, (i, j) in self.COMPASS.items():
-            next_r = R+i
-            next_c = C+j
+        for m, (dx, dy) in self.COMPASS.items():
+            next_x = x + dx
+            next_y = y + dy
 
             # Check that next row / col position is in range (> 0)
-            if next_r < 0 or next_c < 0:
+            if next_x < 0 or next_y < 0:
                 continue
             # Check that next row / col position is in range (< max)
-            if next_r >= self.grid.nrow or next_c >= self.grid.ncol:
+            if next_x >= self.grid.nrow or next_y >= self.grid.ncol:
                 continue
 
             vmoves.append(m)
@@ -50,15 +50,15 @@ class Moves(object):
 
         """
         # set originating [source] coordinate
-        r, c = xy
+        x, y = xy
 
         steps = {}  # store of valid next steps
         # Get available moves
-        moves = self._get_valid_moves((r, c))
+        moves = self._get_valid_moves((x, y))
 
         for m in moves:
-            _r, _c = self.COMPASS[m]
-            steps[m] = (r + _r, c + _c)
+            _x, _y = self.COMPASS[m]
+            steps[m] = (x + _x, y + _y)
 
         return steps
 
@@ -66,12 +66,12 @@ class Moves(object):
         """Build a tree of word stems."""
         # Initiate graph with root node. Index is [tier][next moves]
 
-        self.tree = {'nodes': set([x for y in self.grid.coords for x in y]),
-                     'edges': set()}
+        self.tree = {'nodes': [x for x in self.grid],
+                     'edges': []}
         for node in self.tree['nodes']:
             moves = self._next_step(node)
             for move in moves.values():
-                self.tree['edges'].add((node, move))
+                self.tree['edges'].append((node, move))
 
     def build_paths_graph(self):
         """Optimized path building for improved speed."""

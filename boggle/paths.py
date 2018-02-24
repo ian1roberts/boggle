@@ -1,4 +1,4 @@
-"""Random thoughts on DiGraphs."""
+"""Compute all paths in a digraph."""
 import networkx as nx
 
 
@@ -41,9 +41,9 @@ def make_digraph(orig, grid, tree, wlen):
 
 def compute_all_paths(gx):
     """Brute force compute all paths by bactracking method."""
-    wlen = list(set([d['tier'] for (_, d) in gx.nodes(data=True)]))[-1]
-    tns = [n for n, d in gx.nodes(data=True) if d['tier'] == wlen]
+    wlen = max([d for _, d in list(gx.nodes.data('tier'))])
+    tns = [n for n, d in gx.nodes.data('tier') if d == wlen]
 
     for n in tns:
         path = list(nx.algorithms.dag.ancestors(gx, n)) + [n]
-        yield(path)
+        yield(sorted(path))
