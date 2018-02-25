@@ -82,9 +82,11 @@ def main(args, wlen, fpath='/usr/share/dict/words'):
 
 
 if __name__ == "__main__":
-    a = main(['cat', 'dog', 'hog'], 0)
+    # a = main(['cat', 'dog', 'hog'], 0)
     # print('\n' * 2)
     # b = main(['cat', 'dog', 'hog'], 4)
     # print('\n' * 2)
-    c = main(['sho', 'acw', 'sed'], 0)
+    # c = main(['sho', 'acw', 'sed'], 0)
     # d = main(['shop', 'acwe', 'sted', 'fobe'], 0)
+#    e1 = main(['metet', 'eeyml', 'dnrha', 'ieuut', 'ciklp'], 8)
+    e2 = main(['m****', 'eey**', 'dnrm*', 'ieuut', 'ciklp'], 8)

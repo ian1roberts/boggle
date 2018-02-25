@@ -1,6 +1,7 @@
 """Moves module computes the permissable moves from each node."""
 import networkx as nx
-
+import matplotlib.pyplot as plt
+from uuid import uuid4
 
 class Moves(object):
     """Make `Moves` class with origin, wordlength number of rows, cols."""
@@ -73,8 +74,14 @@ class Moves(object):
             for move in moves.values():
                 self.tree['edges'].append((node, move))
 
-    def build_paths_graph(self):
+    def build_paths_graph(self, fn='boggle_board.png'):
         """Optimized path building for improved speed."""
         self.graph = nx.grid_2d_graph(self.grid.nrow, self.grid.ncol)
         self.graph.add_nodes_from(self.tree['nodes'])
         self.graph.add_edges_from(self.tree['edges'])
+
+        pos = dict((n, n) for n in self.graph.nodes())
+        nx.draw_networkx(self.graph, pos=pos, labels=self.grid.board,
+                         node_size=900)
+        plt.savefig("{}_{}".format(str(uuid4())[:6], fn))
+        plt.close()
