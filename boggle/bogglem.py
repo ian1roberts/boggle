@@ -1,5 +1,6 @@
 """Boggle module."""
 import multiprocessing
+import networkx as nx
 from codecs import open
 from boggle.grid import Grid
 from boggle.moves import Moves
@@ -7,6 +8,7 @@ from boggle.paths import make_digraph, compute_all_paths
 
 
 MAX_WLEN = 10
+MIN_WLEN = 2
 
 
 def _do_compute(params):
@@ -16,20 +18,29 @@ def _do_compute(params):
 
     ori_words = dict()
     for k in xy_paths:
+        path_key = tuple(k)       # path_keys are ordered lists of node indexes
+        ori_words[path_key] = {}  # words by length under Longest Path Key
+
         kw = [xy_tree.nodes[l]['letter'] for l in k]
-        while len(kw) > 2:
+        while len(kw) > MIN_WLEN:
             i = len(kw)
             if i not in ori_words:
-                ori_words[i] = set()
+                ori_words[path_key][i] = set()
             fw = "".join(kw)
-            rw = fw[::-1]
-            if fw.upper() in dictionary:
-                ori_words[i].add(fw)
-            if rw.upper() in dictionary:
-                ori_words[i].add(rw)
+            # rw = fw[::-1]
+
+            if "*" not in fw and fw.upper() in dictionary:
+                ori_words[path_key][i].add(fw)
+
+            # if "*" not in rw and rw.upper() in dictionary:
+            #     ori_words[path_key][i].add(rw)
+
             kw.pop()
 
-    return(ori_words)
+        if len(ori_words[path_key]) < 1:
+            del ori_words[path_key]
+
+    return((ori, ori_words, xy_tree))
 
 
 def main(args, wlen, fpath='/usr/share/dict/words'):
@@ -67,18 +78,23 @@ def main(args, wlen, fpath='/usr/share/dict/words'):
     p = multiprocessing.Pool(4)
     all_words = dict()
     xargs = []
-    for coord in grid.upper_tri:
+    for coord in grid.coords:
         xargs.append((coord, grid, moves, wlen, dictionary))
 
     results = p.map(_do_compute, xargs)
-    for result in results:
-        for k, v in result.items():
-            if k not in all_words:
-                all_words[k] = set()
-            all_words[k] = all_words[k].union(v)
+
+    # Parse the results object to form set of all legal words for all origins.
+    boards = {}
+    for locus, words, tree in results:
+        boards[locus] = tree
+        for path_key, wordlens in words.items():
+            for k, word in wordlens.items():
+                if k not in all_words:
+                    all_words[k] = set()
+                all_words[k] = all_words[k].union(word)
 
     # Return all objects
-    return(all_words)
+    return((all_words, boards))
 
 
 if __name__ == "__main__":
@@ -86,7 +102,7 @@ if __name__ == "__main__":
     # print('\n' * 2)
     # b = main(['cat', 'dog', 'hog'], 4)
     # print('\n' * 2)
-    # c = main(['sho', 'acw', 'sed'], 0)
+    # c, c_data = main(['sho', 'acw', 'sed'], 0)
     # d = main(['shop', 'acwe', 'sted', 'fobe'], 0)
-#    e1 = main(['metet', 'eeyml', 'dnrha', 'ieuut', 'ciklp'], 8)
-    e2 = main(['m****', 'eey**', 'dnrm*', 'ieuut', 'ciklp'], 8)
+    # e1, e1_data = main(['metet', 'eeyml', 'dnrha', 'ieuut', 'ciklp'], 8)
+    e2, e2_data = main(['m****', 'eey**', 'dnrm*', 'ieuut', 'ciklp'], 8)
