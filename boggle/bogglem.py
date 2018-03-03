@@ -1,65 +1,108 @@
 """Boggle module."""
-
-
+import multiprocessing
+import networkx as nx
+from codecs import open
 from boggle.grid import Grid
-from boggle.paths import Paths
+from boggle.moves import Moves
+from boggle.paths import make_digraph, compute_all_paths
 
 
-def main(args, wlen=0):
+MAX_WLEN = 10
+MIN_WLEN = 2
+
+
+def _do_compute(params):
+    ori, grid, moves, wlen, dictionary = params
+    xy_tree = make_digraph(ori, grid, moves, wlen)
+    xy_paths = compute_all_paths(xy_tree)
+
+    ori_words = dict()
+    for k in xy_paths:
+        path_key = tuple(k)       # path_keys are ordered lists of node indexes
+        ori_words[path_key] = {}  # words by length under Longest Path Key
+
+        kw = [xy_tree.nodes[l]['letter'] for l in k]
+        while len(kw) > MIN_WLEN:
+            i = len(kw)
+            if i not in ori_words:
+                ori_words[path_key][i] = set()
+            fw = "".join(kw)
+            # rw = fw[::-1]
+
+            if "*" not in fw and fw.upper() in dictionary:
+                ori_words[path_key][i].add(fw)
+
+            # if "*" not in rw and rw.upper() in dictionary:
+            #     ori_words[path_key][i].add(rw)
+
+            kw.pop()
+
+        if len(ori_words[path_key]) < 1:
+            del ori_words[path_key]
+
+    return((ori, ori_words, xy_tree))
+
+
+def main(args, wlen, fpath='/usr/share/dict/words'):
     """Launch boggle app with passed arguments.
 
     Boggle searches a word grid for all words of length `wlen`.
     If `wlen` is 0, then all word sizes from 3 letters to grid length
     are computed.
 
-    If `wlen` is specified, only words of that size are returned.
-
-    It returns a `Paths` object, defining all the solved word paths
-    in the grid.
+    If `wlen` is specified, only words up to that size are returned.
 
     Args:
-        args (['word1', 'word2', '...']): list of bad_words.
-        wlen (int): length of result words.
+        args (['word1', 'word2', '...']): list of board_words.
+        wlen (int): max length of result words.
 
     Example:
         a = main(['cat', 'dog', 'hog'], 3)
         b = main(['cat', 'dog', 'hog'], 0)
 
     """
-    print("Starting ...")
-    nrow = len(args)
-    ncol = len(args[0])
+    # Parse dictionary
+    with open(fpath, encoding='utf-8') as f:
+        words = f.read().splitlines()
+    dictionary = set([x.upper().strip() for x in words])
+
+    # Parse command line arguments
     x = ' '.join(args)
-    g = Grid(x, nrow, ncol)
-    p = Paths(g, wlen)
+    grid = Grid(x)
+    moves = Moves(grid)
 
-    wlens = set([i.wlen for i in p.paths])
+    # Word length checking
+    if wlen == 0 or wlen > MAX_WLEN:
+        wlen = MAX_WLEN
 
-    # summarize all_words
-    all_words = dict(zip(wlens, [set() for _ in wlens]))
+    p = multiprocessing.Pool(4)
+    all_words = dict()
+    xargs = []
+    for coord in grid.coords:
+        xargs.append((coord, grid, moves, wlen, dictionary))
 
-    for i in p.paths:
-        for k, v in i.words.items():
-            all_words[len(v)].add((k, v))
+    results = p.map(_do_compute, xargs)
 
-    p.all_words = all_words
+    # Parse the results object to form set of all legal words for all origins.
+    boards = {}
+    for locus, words, tree in results:
+        boards[locus] = tree
+        for path_key, wordlens in words.items():
+            for k, word in wordlens.items():
+                if k not in all_words:
+                    all_words[k] = set()
+                all_words[k] = all_words[k].union(word)
 
-    all_words_dedup = dict(zip(wlens, [set() for _ in wlens]))
-    for k, v in all_words.items():
-        for x, y in v:
-            all_words_dedup[k].add(y)
-
-    p.all_words_dedup = all_words_dedup
-
-    print("Finishing ...")
-    return(p)
+    # Return all objects
+    return((all_words, boards))
 
 
 if __name__ == "__main__":
-    # import sys
-    # sys.path.insert(0, "/home/ian/workspace/boggle")
     # a = main(['cat', 'dog', 'hog'], 0)
     # print('\n' * 2)
     # b = main(['cat', 'dog', 'hog'], 4)
     # print('\n' * 2)
-    a = main(['sho', 'acw', 'sed'], 0)
+    # c, c_data = main(['sho', 'acw', 'sed'], 0)
+    # d = main(['shop', 'acwe', 'sted', 'fobe'], 0)
+    # e1, e1_data = main(['metet', 'eeyml', 'dnrha', 'ieuut', 'ciklp'], 8)
+    e2, e2_data = main(['m****', 'eey**', 'dnrm*', 'ieuut', 'ciklp'], 8)
