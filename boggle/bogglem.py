@@ -1,6 +1,5 @@
 """Boggle module."""
 import multiprocessing
-import networkx as nx
 from codecs import open
 from boggle.grid import Grid
 from boggle.moves import Moves
@@ -12,8 +11,8 @@ MIN_WLEN = 2
 
 
 def _do_compute(params):
-    ori, grid, moves, wlen, dictionary = params
-    xy_tree = make_digraph(ori, grid, moves, wlen)
+    ori, jd = params
+    xy_tree = make_digraph(ori, jd["grid"], jd["moves"], jd["maxwlen"])
     xy_paths = compute_all_paths(xy_tree)
 
     ori_words = dict()
@@ -22,18 +21,14 @@ def _do_compute(params):
         ori_words[path_key] = {}  # words by length under Longest Path Key
 
         kw = [xy_tree.nodes[l]['letter'] for l in k]
-        while len(kw) > MIN_WLEN:
+        while len(kw) > jd["minwlen"]:
             i = len(kw)
             if i not in ori_words:
                 ori_words[path_key][i] = set()
             fw = "".join(kw)
-            # rw = fw[::-1]
 
-            if "*" not in fw and fw.upper() in dictionary:
+            if "*" not in fw and fw.upper() in jd["dictionary"]:
                 ori_words[path_key][i].add(fw)
-
-            # if "*" not in rw and rw.upper() in dictionary:
-            #     ori_words[path_key][i].add(rw)
 
             kw.pop()
 
@@ -43,22 +38,23 @@ def _do_compute(params):
     return((ori, ori_words, xy_tree))
 
 
-def main(args, wlen, fpath='/usr/share/dict/words'):
+def main(args, minwlen, maxwlen, fpath='/usr/share/dict/words'):
     """Launch boggle app with passed arguments.
 
-    Boggle searches a word grid for all words of length `wlen`.
-    If `wlen` is 0, then all word sizes from 3 letters to grid length
-    are computed.
+    Boggle searches a word grid for all words of length longer than.
+    `minwlen` and shorter than `maxwlen`.
 
-    If `wlen` is specified, only words up to that size are returned.
+    Maximum allowable wordlength is 10 characters.
+    Minimum allowable wordlength is 2 characters.
 
     Args:
         args (['word1', 'word2', '...']): list of board_words.
-        wlen (int): max length of result words.
+        minwlen (int): min length of result words.
+        maxwlen (int): max length of result words.
 
     Example:
-        a = main(['cat', 'dog', 'hog'], 3)
-        b = main(['cat', 'dog', 'hog'], 0)
+        a = main(['cat', 'dog', 'hog'], 2, 10)
+        b = main(['cat', 'dog', 'hog'], 2, 10)
 
     """
     # Parse dictionary
@@ -72,14 +68,17 @@ def main(args, wlen, fpath='/usr/share/dict/words'):
     moves = Moves(grid)
 
     # Word length checking
-    if wlen == 0 or wlen > MAX_WLEN:
-        wlen = MAX_WLEN
+    assert maxwlen > minwlen, "Max word length less than minimum wordlength."
+    assert maxwlen < MAX_WLEN, "Maximum word length exceeds limit."
+    assert minwlen > MIN_WLEN, "Minimum word length too low."
 
     p = multiprocessing.Pool(4)
     all_words = dict()
     xargs = []
+    job_data = {"grid": grid, "moves": moves, "dictionary": dictionary,
+                "maxwlen": maxwlen, "minwlen": minwlen}
     for coord in grid.coords:
-        xargs.append((coord, grid, moves, wlen, dictionary))
+        xargs.append((coord, job_data))
 
     results = p.map(_do_compute, xargs)
 
@@ -95,14 +94,3 @@ def main(args, wlen, fpath='/usr/share/dict/words'):
 
     # Return all objects
     return((all_words, boards))
-
-
-if __name__ == "__main__":
-    # a = main(['cat', 'dog', 'hog'], 0)
-    # print('\n' * 2)
-    # b = main(['cat', 'dog', 'hog'], 4)
-    # print('\n' * 2)
-    # c, c_data = main(['sho', 'acw', 'sed'], 0)
-    # d = main(['shop', 'acwe', 'sted', 'fobe'], 0)
-    # e1, e1_data = main(['metet', 'eeyml', 'dnrha', 'ieuut', 'ciklp'], 8)
-    e2, e2_data = main(['m****', 'eey**', 'dnrm*', 'ieuut', 'ciklp'], 8)

@@ -3,6 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from uuid import uuid4
 
+
 class Moves(object):
     """Make `Moves` class with origin, wordlength number of rows, cols."""
 
