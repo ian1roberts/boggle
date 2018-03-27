@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 __version__ = 0.1
 
 here = path.abspath(path.dirname(__file__))
-with open(path.join(here, 'README.txt'), encoding='utf-8') as f:
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
@@ -24,7 +24,7 @@ setup(
     classifiers=[
         'Development Status :: 3- Alpha',
         'Intended Audience :: Developers',
-        'Topic :: Life Sciences',
+        'Topic :: Word Games',
         'Programming Language :: Python :: 3',
     ],
     install_requires=['networkx', 'nose'

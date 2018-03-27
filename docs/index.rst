@@ -7,10 +7,12 @@ Welcome to boggle's documentation!
 ==================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Contents:
 
-
+   src/0_readme
+   src/1_logic
+   src/2_modules
 
 Indices and tables
 ==================
