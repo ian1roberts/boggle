@@ -1,5 +1,6 @@
 """Boggle module."""
 import multiprocessing
+import csv
 from codecs import open
 from boggle.grid import Grid
 from boggle.moves import Moves
@@ -8,6 +9,11 @@ from boggle.paths import make_digraph, compute_all_paths
 
 MAX_WLEN = 10
 MIN_WLEN = 2
+
+
+def _export_words(fname):
+    fhandle = csv.DictWriter(open(fname, mode='w'),
+                             fieldnames=["length", "word", "path"])
 
 
 def _do_compute(params):
@@ -38,7 +44,9 @@ def _do_compute(params):
     return((ori, ori_words, xy_tree))
 
 
-def main(args, minwlen, maxwlen, fpath='/usr/share/dict/words'):
+def main(args, minwlen, maxwlen, xdisplay=False,
+         xfilename="boggle_words.tsv",
+         fpath='/usr/share/dict/words'):
     """Launch boggle app with passed arguments.
 
     Boggle searches a word grid for all words of length longer than.
@@ -51,6 +59,8 @@ def main(args, minwlen, maxwlen, fpath='/usr/share/dict/words'):
         args (['word1', 'word2', '...']): list of board_words.
         minwlen (int): min length of result words.
         maxwlen (int): max length of result words.
+        xdisplay (bool): Suppress printing words to screen (False).
+        xfilename (str): boggle output filename (boggle_words.tsv).
 
     Example:
         a = main(['cat', 'dog', 'hog'], 2, 10)
@@ -68,9 +78,9 @@ def main(args, minwlen, maxwlen, fpath='/usr/share/dict/words'):
     moves = Moves(grid)
 
     # Word length checking
-    assert maxwlen > minwlen, "Max word length less than minimum wordlength."
-    assert maxwlen < MAX_WLEN, "Maximum word length exceeds limit."
-    assert minwlen > MIN_WLEN, "Minimum word length too low."
+    assert maxwlen >= minwlen, "Max word length less than minimum wordlength."
+    assert maxwlen <= MAX_WLEN, "Maximum word length exceeds limit."
+    assert minwlen >= MIN_WLEN, "Minimum word length too low."
 
     p = multiprocessing.Pool(4)
     all_words = dict()
@@ -91,6 +101,10 @@ def main(args, minwlen, maxwlen, fpath='/usr/share/dict/words'):
                 if k not in all_words:
                     all_words[k] = set()
                 all_words[k] = all_words[k].union(word)
+
+    # Display words on screen
+
+    # Export words to a file
 
     # Return all objects
     return((all_words, boards))

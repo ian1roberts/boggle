@@ -19,5 +19,12 @@ Modify behaviour with the following command line options::
 
   --minwordlength ... set the minimum length of found words (default 3)
   --maxwordlength ... set the maximum length of found words (default 9)
+  --nodisplay     ... do not display found words on screen (False)
+  --filename      ... filename of output (boggle_words.tsv)
 
 Note that the longer the word, the longer the run time!
+
+Output
+======
+
+Output file displays the found words, alphabetically ordered by length, in two columns.  First column contains the word, second column provides the coordinates of the word path.  Coordinates are in RC format.
