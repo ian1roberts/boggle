@@ -1,55 +1,45 @@
-"""Boggle module."""
+"""Boards main module."""
 import multiprocessing
-import csv
-from codecs import open
 from boggle.grid import Grid
 from boggle.moves import Moves
 from boggle.paths import make_digraph, compute_all_paths
-
+from boggle.manage import (load_dictionary, export_words, display_words,
+                           export_board_paths, import_board_paths)
 
 MAX_WLEN = 10
 MIN_WLEN = 2
-DICT_PATH = "/usr/share/dict/words"
 
 
-def _load_dictionary(fpath=DICT_PATH):
-    """Load the system word list."""
-    with open(fpath, encoding='utf-8') as f:
-        words = f.read().splitlines()
-    return(set([x.upper().strip() for x in words]))
-
-
-def _export_words(fname):
-    fhandle = csv.DictWriter(open(fname, mode='w'),
-                             fieldnames=["length", "word", "path"])
-
-
-def _do_compute(params):
-    ori, jd = params
-    xy_tree = make_digraph(ori, jd["moves"], jd["maxwlen"])
-    xy_paths = compute_all_paths(xy_tree)
-
+def _do_chains_to_words(grid, all_paths, dictionary):
+    """Convert chain of coordinates to words."""
     ori_words = dict()
-    for k in xy_paths:
-        path_key = tuple(k)       # path_keys are ordered lists of node indexes
-        ori_words[path_key] = {}  # words by length under Longest Path Key
+    for ori, tree, paths in all_paths:
+        for path in paths:
+            # grid path for word
+            chain = [tree.nodes[i]['coord'] for i in path]
+            # add words, chains to growing dictionary
+            while len(chain) > MIN_WLEN:
+                # word from chain
+                word = [grid[i] for i in chain]
+                word = ''.join(word)
+                if "*" not in word and word.upper() in dictionary:
+                    wordlen = len(word)
+                    if wordlen not in ori_words:
+                        ori_words[wordlen] = set()
+                    ori_words[wordlen].add((word, tuple(chain)))
+                chain.pop()
 
-        kw = [xy_tree.nodes[l]['letter'] for l in k]
-        while len(kw) > jd["minwlen"]:
-            i = len(kw)
-            if i not in ori_words:
-                ori_words[path_key][i] = set()
-            fw = "".join(kw)
+    return ori_words
 
-            if "*" not in fw and fw.upper() in jd["dictionary"]:
-                ori_words[path_key][i].add(fw)
 
-            kw.pop()
+def _do_compute_chains(params):
+    ori, moves, maxwlen = params
+    tree = make_digraph(ori, moves, maxwlen)
+    all_paths = []
+    for path in compute_all_paths(tree):
+        all_paths.append(path)
 
-        if len(ori_words[path_key]) < 1:
-            del ori_words[path_key]
-
-    return((ori, ori_words, xy_tree))
+    return((ori, tree, all_paths))
 
 
 def main(args):
@@ -76,48 +66,43 @@ def main(args):
     # Parse command line args
     minwlen = int(args.minwordlength)
     maxwlen = int(args.maxwordlength)
-    xdisplay = args.nodisplay
-    xfilename = args.xfilename
 
     # sanity check word lengths
     assert maxwlen >= minwlen, "Max word length less than minimum wordlength."
     assert maxwlen <= MAX_WLEN, "Maximum word length exceeds limit."
     assert minwlen >= MIN_WLEN, "Minimum word length too low."
 
-    # Parse dictionary
-    dictionary = _load_dictionary()
-
     # Parse command line arguments
     x = ' '.join(args.words)
     grid = Grid(x)
     # Check if grid moves are known, load them or compute
-    moves = Moves(grid)
+    board = import_board_paths(grid, maxwlen)
+    if board is None:
+        # Unknown board, so compute moves, paths and save new board.
+        moves = Moves(grid)
+        p = multiprocessing.Pool(4)
 
+        xargs = []
+        for coord in grid.coords:
+            xargs.append((coord, moves, maxwlen))
 
+        board = p.map(_do_compute_chains, xargs)
 
-    p = multiprocessing.Pool(4)
-    all_words = dict()
-    xargs = []
-    job_data = {"grid": grid, "moves": moves, "dictionary": dictionary,
-                "maxwlen": maxwlen, "minwlen": minwlen}
-    for coord in grid.coords:
-        xargs.append((coord, job_data))
-
-    results = p.map(_do_compute, xargs)
+        # Export the newly computed board_data
+        export_board_paths(grid, board, maxwlen, args.overwrite)
 
     # Parse the results object to form set of all legal words for all origins.
-    boards = {}
-    for locus, words, tree in results:
-        boards[locus] = tree
-        for path_key, wordlens in words.items():
-            for k, word in wordlens.items():
-                if k not in all_words:
-                    all_words[k] = set()
-                all_words[k] = all_words[k].union(word)
-
-    # Display words on screen
+    # Parse dictionary
+    dictionary = load_dictionary()
+    all_words = _do_chains_to_words(grid, board, dictionary)
 
     # Export words to a file
+    output = export_words(all_words, args.filename)
+
+    # Display words on screen
+    if not args.nodisplay:
+        display_words(output)
 
     # Return all objects
-    return((all_words, boards))
+    if args.debug:
+        return (grid, board, all_words)

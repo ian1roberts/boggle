@@ -11,13 +11,15 @@ class Moves(object):
                's': (0, -1),  'sw': (-1, -1), 'w': (-1, 0), 'nw': (-1, 1)
                }
 
-    def __init__(self, grid):
+    def __init__(self, grid, export=False):
         """Instantiate class."""
         self.grid = grid
 
         # Route through grid
         self.compute_moves()
         self.build_paths_graph()
+        if export:
+            self.draw_board()
 
     def _get_valid_moves(self, loc):
         """Compute valid compass points from an x, y location."""
@@ -75,12 +77,14 @@ class Moves(object):
             for move in moves.values():
                 self.tree['edges'].append((node, move))
 
-    def build_paths_graph(self, fn='boggle_board.png'):
+    def build_paths_graph(self):
         """Optimized path building for improved speed."""
         self.graph = nx.grid_2d_graph(self.grid.nrow, self.grid.ncol)
         self.graph.add_nodes_from(self.tree['nodes'])
         self.graph.add_edges_from(self.tree['edges'])
 
+    def draw_board(self, fn='boggle_board.png'):
+        """Export a PNG image of the boggle board."""
         pos = dict((n, n) for n in self.graph.nodes())
         nx.draw_networkx(self.graph, pos=pos, labels=self.grid.board,
                          node_size=900)

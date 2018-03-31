@@ -14,6 +14,12 @@ parser.add_argument('-x', '--nodisplay',
                     action="store_true")
 parser.add_argument('-f', '--filename', help='Output filename',
                     default='boggle_words.tsv', type=str)
+parser.add_argument('-w', '--overwrite',
+                    help='Overwrite existing grid data.',
+                    action="store_true")
+parser.add_argument('-d', '--debug',
+                    help='Run interactive and return main objects.',
+                    action="store_true")
 
 parser.add_argument('words', help='Add space separated words', nargs='*')
 parser.add_argument('-v', '--version', action='version',

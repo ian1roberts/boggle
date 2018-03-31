@@ -2,7 +2,22 @@ from boggle.grid import Grid
 from boggle.moves import Moves
 from boggle.paths import make_digraph, compute_all_paths
 
-from boggle.bogglem import main, _do_compute
+from boggle.bogglem import main
+
+"""
+boggle cat dog hog
+"""
+
+class Args(object):
+    words = ['cat', 'dog', 'hog']
+    minwordlength = 3
+    maxwordlength = 9
+    nodisplay = False
+    filename = "boggle_words.tsv"
+    debug = True
+    overwrite = True
 
 
-a, b = main(['cat', 'dog', 'hog'], 2, 9)
+args = Args()
+
+g, b, a = main(args)
