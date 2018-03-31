@@ -9,6 +9,14 @@ from boggle.paths import make_digraph, compute_all_paths
 
 MAX_WLEN = 10
 MIN_WLEN = 2
+DICT_PATH = "/usr/share/dict/words"
+
+
+def _load_dictionary(fpath=DICT_PATH):
+    """Load the system word list."""
+    with open(fpath, encoding='utf-8') as f:
+        words = f.read().splitlines()
+    return(set([x.upper().strip() for x in words]))
 
 
 def _export_words(fname):
@@ -18,7 +26,7 @@ def _export_words(fname):
 
 def _do_compute(params):
     ori, jd = params
-    xy_tree = make_digraph(ori, jd["grid"], jd["moves"], jd["maxwlen"])
+    xy_tree = make_digraph(ori, jd["moves"], jd["maxwlen"])
     xy_paths = compute_all_paths(xy_tree)
 
     ori_words = dict()
@@ -44,9 +52,7 @@ def _do_compute(params):
     return((ori, ori_words, xy_tree))
 
 
-def main(args, minwlen, maxwlen, xdisplay=False,
-         xfilename="boggle_words.tsv",
-         fpath='/usr/share/dict/words'):
+def main(args):
     """Launch boggle app with passed arguments.
 
     Boggle searches a word grid for all words of length longer than.
@@ -67,20 +73,27 @@ def main(args, minwlen, maxwlen, xdisplay=False,
         b = main(['cat', 'dog', 'hog'], 2, 10)
 
     """
-    # Parse dictionary
-    with open(fpath, encoding='utf-8') as f:
-        words = f.read().splitlines()
-    dictionary = set([x.upper().strip() for x in words])
+    # Parse command line args
+    minwlen = int(args.minwordlength)
+    maxwlen = int(args.maxwordlength)
+    xdisplay = args.nodisplay
+    xfilename = args.xfilename
 
-    # Parse command line arguments
-    x = ' '.join(args)
-    grid = Grid(x)
-    moves = Moves(grid)
-
-    # Word length checking
+    # sanity check word lengths
     assert maxwlen >= minwlen, "Max word length less than minimum wordlength."
     assert maxwlen <= MAX_WLEN, "Maximum word length exceeds limit."
     assert minwlen >= MIN_WLEN, "Minimum word length too low."
+
+    # Parse dictionary
+    dictionary = _load_dictionary()
+
+    # Parse command line arguments
+    x = ' '.join(args.words)
+    grid = Grid(x)
+    # Check if grid moves are known, load them or compute
+    moves = Moves(grid)
+
+
 
     p = multiprocessing.Pool(4)
     all_words = dict()

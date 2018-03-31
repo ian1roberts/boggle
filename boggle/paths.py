@@ -2,13 +2,13 @@
 import networkx as nx
 
 
-def make_digraph(orig, grid, tree, wlen):
+def make_digraph(orig, tree, wlen):
     """Make a tree graph from an origin."""
     # initialize tree with root node
     idx = 0
 
     g = nx.DiGraph()
-    g.add_node(idx, tier=0, coord=orig, letter=grid[orig])
+    g.add_node(idx, tier=0, coord=orig)
     print("ori: {}\ttier: {}\tnode: {}".format(orig, 0, len(g)))
     for tier in range(1, wlen):
 
@@ -24,8 +24,7 @@ def make_digraph(orig, grid, tree, wlen):
                 idx += 1
                 child_xy = children.pop()
 
-                g.add_node(idx, tier=tier, coord=child_xy,
-                           letter=grid[child_xy])
+                g.add_node(idx, tier=tier, coord=child_xy)
                 g.add_edge(pu, idx)
 
                 ancest = nx.algorithms.dag.ancestors(g, idx)

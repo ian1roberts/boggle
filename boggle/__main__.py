@@ -26,5 +26,4 @@ parser.add_argument('-v', '--version', action='version',
 def run_boggle():
     """Launch application via this main routine."""
     args = parser.parse_args()
-    main(args.words, int(args.minwordlength), int(args.maxwordlength),
-         args.nodisplay, args.filename)
+    main(args)
