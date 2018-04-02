@@ -4,15 +4,16 @@
 class Grid(object):
     """Represent the boggle board as a letter grid.
 
+    The boggle board is represented as an XY coordinate space. Where bottom
+    left hand corner is (0, 0).  The `Grid` maps letters to coordinates.
+
     Args:
-        letters ("word1 word2 ..."): a space separated string of words.
-        nrow (int): number of rows in boggle grid.
-        ncol (int): number of columns in boggle grid.
+        letters ("word1 word2 ..."): a space separated string of words..
 
     Attributes:
         nrow (int): number of rows
         ncol (int): number of columns
-        coords ([[(r0, c0), (r0, c1), (r0, c3)],[ ... ]]): grid coordinates
+        coords ([[(x0, y0), (x0, y1), (x0, y2)],[ ... ]]): grid coordinates
         board (str): string representation of grid
         grid ([['a', 'b', 'c'], [ ... ]]): grid letters
 
@@ -28,7 +29,7 @@ class Grid(object):
         self.search_space()
 
     def __str__(self):
-        """Print representation."""
+        """Print letter board in coordinate space."""
         txt = ''
         for y in range(self.nrow-1, -1, -1):
             row = self.grid[y]
@@ -43,18 +44,25 @@ class Grid(object):
         return (len(self._chars))
 
     def __getitem__(self, key):
-        """Return items."""
+        """Return letter item given (x, y) coordinate."""
         x, y = key
         return self.grid[y][x]
 
     def __iter__(self):
-        """Step over letters row by column."""
+        """Step over letters row(y) by column(x)."""
         for x in range(0, self.ncol):
             for y in range(0, self.nrow):
                 yield (x, y)
 
     def parse_letters(self, letters):
-        """Split on space, listify words. Set up (x, y) coords."""
+        """Split on space, listify words. Set up (x, y) coords.
+
+        Grid is held as a list of lists. Number of rows (y) is the number of
+        space separated words input. Number of columns (x) is the number of
+        letters in first word. Note there is no check that all columns have
+        same number of letters.
+
+        """
         self._chars = letters.replace(" ", "")
         self.grid = []
         items = letters.split(" ")
@@ -70,12 +78,3 @@ class Grid(object):
         self.board = dict()
         for x, y in self.coords:
             self.board[(x, y)] = self[(x, y)]
-
-    def search_space(self):
-        """Compute search space. Diagnonal matrix."""
-        upper_tri = []
-        for n in self:
-            if n[0] <= n[1]:
-                upper_tri.append(n)
-
-        self.upper_tri = upper_tri

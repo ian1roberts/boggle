@@ -1,4 +1,4 @@
-"""Boards main module."""
+"""Boggle main module. Responsible for executing a game session."""
 import multiprocessing
 from boggle.grid import Grid
 from boggle.moves import Moves
@@ -10,8 +10,27 @@ MAX_WLEN = 10
 MIN_WLEN = 2
 
 
-def _do_chains_to_words(grid, all_paths, dictionary):
-    """Convert chain of coordinates to words."""
+def do_chains_to_words(grid, all_paths, dictionary):
+    """Convert chains of letter coordinates to words.
+
+    Words are computed for each letter orgin, using the digraph `tree` of all
+    moves from origin. The tree nodes have `coordinate` attributes, and the
+    tree paths are node chains.  To compute a word, it is necessary to convert
+    the node chains to coordinate chains, then via the `Grid` object, Convert
+    coordinate chains to letters.  Only words in dictionary are permissible.
+
+    Words are computed from `MAX_WLEN` to `MIN_WLEN` in a loop, dropping
+    a node (coordinate) at each cycle.  Note that `*` is used to signify a
+    blocked tile.
+
+    Arguments:
+        grid (Grid) Representation of a boggle board.
+        all_paths (list) Word chains in boggle board coordinate space.
+        dictionary (set) Set of known words from unix dictionary.
+
+    Returns:
+        ori_words (dict) set of all found words indexed by word length.
+    """
     ori_words = dict()
     for ori, tree, paths in all_paths:
         for path in paths:
@@ -32,7 +51,24 @@ def _do_chains_to_words(grid, all_paths, dictionary):
     return ori_words
 
 
-def _do_compute_chains(params):
+def do_compute_chains(params):
+    """For a given boggle letter `ori` make the digraph of all_paths
+    through the grid, up to `MAX_WLEN`. From the digraph, compute all_paths
+    through the grid, which equates to all possible words. Note that all_paths
+    are chains of nodes through the digraph, not letter coordinates.
+
+    This function is run asynchronously, in parallel. Passing `ori` back makes
+    it easier to work out which cell of the boggle grid is being processed.
+
+    Arguments:
+        params (tuple) Origin coordinate letter, valid moves, maxwordlength.
+
+    Returns:
+        ori (tuple) Origin coordinate letter.
+        tree (DiGraph) Graph of all paths through boggle grid from `ori`.
+        all_paths (list) List of node chains up to `MAX_WLEN`.
+
+    """
     ori, moves, maxwlen = params
     tree = make_digraph(ori, moves, maxwlen)
     all_paths = []
@@ -43,7 +79,7 @@ def _do_compute_chains(params):
 
 
 def main(args):
-    """Launch boggle app with passed arguments.
+    """Execute boggle app with passed arguments.
 
     Boggle searches a word grid for all words of length longer than.
     `minwlen` and shorter than `maxwlen`.
@@ -55,8 +91,11 @@ def main(args):
         args (['word1', 'word2', '...']): list of board_words.
         minwlen (int): min length of result words.
         maxwlen (int): max length of result words.
-        xdisplay (bool): Suppress printing words to screen (False).
-        xfilename (str): boggle output filename (boggle_words.tsv).
+        nodisplay (bool): Suppress printing words to screen (False).
+        filename (str): boggle output filename (boggle_words.tsv).
+        graph (bool): plot boogle chart
+        overwrite (bool): Force recomputing and overwriting boggle boards.
+        debug (bool): If true, return objects in interactive shell session.
 
     Example:
         a = main(['cat', 'dog', 'hog'], 2, 10)
@@ -77,8 +116,9 @@ def main(args):
     grid = Grid(x)
     # Check if grid moves are known, load them or compute
     board = import_board_paths(grid, maxwlen)
-    if board is None:
+    if board is None or args.overwrite:
         # Unknown board, so compute moves, paths and save new board.
+        # Or force recompute.
         moves = Moves(grid)
         p = multiprocessing.Pool(4)
 
@@ -86,7 +126,7 @@ def main(args):
         for coord in grid.coords:
             xargs.append((coord, moves, maxwlen))
 
-        board = p.map(_do_compute_chains, xargs)
+        board = p.map(do_compute_chains, xargs)
 
         # Export the newly computed board_data
         export_board_paths(grid, board, maxwlen, args.overwrite)
@@ -94,7 +134,7 @@ def main(args):
     # Parse the results object to form set of all legal words for all origins.
     # Parse dictionary
     dictionary = load_dictionary()
-    all_words = _do_chains_to_words(grid, board, dictionary)
+    all_words = do_chains_to_words(grid, board, dictionary)
 
     # Export words to a file
     output = export_words(all_words, args.filename)

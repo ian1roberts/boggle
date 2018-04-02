@@ -9,15 +9,18 @@ parser.add_argument('-m', '--maxwordlength',
 parser.add_argument('-n', '--minwordlength',
                     help='Minimum wordlength to search for in grid.',
                     default=3)
+parser.add_argument('-g', '--graph',
+                    help='Plot a graph of the word grid.',
+                    action="store_true", default=False)
 parser.add_argument('-x', '--nodisplay',
                     help='Suppress displaying found words',
-                    action="store_true")
+                    action="store_true", default=False)
 parser.add_argument('-f', '--filename', help='Output filename',
                     default='boggle_words.tsv', type=str)
 parser.add_argument('-w', '--overwrite',
                     help='Overwrite existing grid data.',
-                    action="store_true")
-parser.add_argument('-d', '--debug',
+                    action="store_true", default=False)
+parser.add_argument('-d', '--debug', default=False,
                     help='Run interactive and return main objects.',
                     action="store_true")
 
