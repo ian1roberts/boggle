@@ -26,7 +26,6 @@ class Grid(object):
         """Instantiate with letters, number of rows and columns."""
         self.parse_letters(letters)
         self.layout()
-        self.search_space()
 
     def __str__(self):
         """Print letter board in coordinate space."""

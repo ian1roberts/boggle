@@ -89,7 +89,6 @@ def main(args):
 
     Args:
         args (['word1', 'word2', '...']): list of board_words.
-        minwlen (int): min length of result words.
         maxwlen (int): max length of result words.
         nodisplay (bool): Suppress printing words to screen (False).
         filename (str): boggle output filename (boggle_words.tsv).
@@ -98,18 +97,16 @@ def main(args):
         debug (bool): If true, return objects in interactive shell session.
 
     Example:
-        a = main(['cat', 'dog', 'hog'], 2, 10)
-        b = main(['cat', 'dog', 'hog'], 2, 10)
+        a = main(['cat', 'dog', 'hog'], 10)
+        b = main(['cat', 'dog', 'hog'], 10)
 
     """
     # Parse command line args
-    minwlen = int(args.minwordlength)
     maxwlen = int(args.maxwordlength)
 
     # sanity check word lengths
-    assert maxwlen >= minwlen, "Max word length less than minimum wordlength."
+    assert maxwlen > MIN_WLEN, "Max word length less than minimum wordlength."
     assert maxwlen <= MAX_WLEN, "Maximum word length exceeds limit."
-    assert minwlen >= MIN_WLEN, "Minimum word length too low."
 
     # Parse command line arguments
     x = ' '.join(args.words)
@@ -142,6 +139,12 @@ def main(args):
     # Display words on screen
     if not args.nodisplay:
         display_words(output)
+
+    # Draw boogle board if requested
+    if args.graph:
+        fn = args.filename.replace('.tsv', '_board.png')
+        moves.grid = grid
+        moves.draw_board(fn)
 
     # Return all objects
     if args.debug:

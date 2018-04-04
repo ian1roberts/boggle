@@ -6,9 +6,6 @@ parser = argparse.ArgumentParser(description="Boggle word puzzle solver")
 parser.add_argument('-m', '--maxwordlength',
                     help='Maximum wordlength to search for in grid.',
                     default=9)
-parser.add_argument('-n', '--minwordlength',
-                    help='Minimum wordlength to search for in grid.',
-                    default=3)
 parser.add_argument('-g', '--graph',
                     help='Plot a graph of the word grid.',
                     action="store_true", default=False)

@@ -10,9 +10,9 @@ boggle cat dog hog
 
 class Args(object):
     words = ['cat', 'dog', 'hog']
-    minwordlength = 3
     maxwordlength = 9
     nodisplay = False
+    graph = True
     filename = "boggle_words.tsv"
     debug = True
     overwrite = True
