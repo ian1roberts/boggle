@@ -30,6 +30,7 @@ def do_chains_to_words(grid, all_paths, dictionary):
 
     Returns:
         ori_words (dict) set of all found words indexed by word length.
+
     """
     ori_words = dict()
     for ori, tree, paths in all_paths:
@@ -52,8 +53,9 @@ def do_chains_to_words(grid, all_paths, dictionary):
 
 
 def do_compute_chains(params):
-    """For a given boggle letter `ori` make the digraph of all_paths
-    through the grid, up to `MAX_WLEN`. From the digraph, compute all_paths
+    """For a given boggle letter `ori` make the digraph of all_paths.
+
+    From the digraph, compute all_paths through the grid, up to `MAX_WLEN`.
     through the grid, which equates to all possible words. Note that all_paths
     are chains of nodes through the digraph, not letter coordinates.
 
