@@ -88,5 +88,7 @@ class Moves(object):
         pos = dict((n, n) for n in self.graph.nodes())
         nx.draw_networkx(self.graph, pos=pos, labels=self.grid.board,
                          node_size=900)
-        plt.savefig("{}_{}".format(str(uuid4())[:6], fn))
+        png_fn = "{}_{}".format(str(uuid4())[:6], fn)
+        print(png_fn)
+        plt.savefig(png_fn)
         plt.close()
