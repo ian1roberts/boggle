@@ -71,13 +71,6 @@ def do_compute_chains(params):
         all_paths (list) List of node chains up to `MAX_WLEN`.
 
     """
-    ori, moves, maxwlen = params
-    tree = make_digraph(ori, moves, maxwlen)
-    all_paths = []
-    for path in compute_all_paths(tree):
-        all_paths.append(path)
-
-    return((ori, tree, all_paths))
 
 
 def main(args):
@@ -113,14 +106,13 @@ def main(args):
     # Parse command line arguments
     x = ' '.join(args.words)
     grid = Grid(x)
+    moves = Moves(grid)
     # Check if grid moves are known, load them or compute
     board = import_board_paths(grid, maxwlen)
     if board is None or args.overwrite:
         # Unknown board, so compute moves, paths and save new board.
-        # Or force recompute.
-        moves = Moves(grid)
+        # Or force recompute
         p = multiprocessing.Pool(4)
-
         xargs = []
         for coord in grid.coords:
             xargs.append((coord, moves, maxwlen))

@@ -3,16 +3,14 @@
 
 import unittest
 from boggle.grid import Grid
-from boggle.paths import Paths
-from boggle.board import Board
+from boggle.moves import Moves
+from boggle.paths import make_digraph, compute_all_paths
 
 
 class Test(unittest.TestCase):
     """Define generic testcase for boggle."""
 
-    grid = Grid([['c', 'a', 't'],
-                 ['d', 'o', 'g'],
-                 ['h', 'o', 'g']], 3, 3)
+    grid = Grid("cat dog hog")
 
     p3 = Paths(grid, 3)
 

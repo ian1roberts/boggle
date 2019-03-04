@@ -91,6 +91,7 @@ def export_board_paths(grid, board_data, maxwlen, ow=False):
 
     Returns:
         None
+
     """
     fname = "{}x{}-{}-board.pkl".format(grid.nrow, grid.ncol, maxwlen)
     fname = op.join(_get_board_data_dir(), fname)
@@ -115,6 +116,7 @@ def import_board_paths(grid, maxwlen):
 
     Returns:
         board_data
+
     """
     fname = "{}x{}-{}-board.pkl".format(grid.nrow, grid.ncol, maxwlen)
     fname = op.join(_get_board_data_dir(), fname)
