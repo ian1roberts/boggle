@@ -1,0 +1,2 @@
+MAX_WLEN = 10
+MIN_WLEN = 2

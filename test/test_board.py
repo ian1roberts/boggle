@@ -11,7 +11,7 @@ class Test(unittest.TestCase):
     """Define generic testcase for boggle."""
 
     grid = Grid("cat dog hog")
-
+    moves = Moves(grid)
     p3 = Paths(grid, 3)
 
     def test_instantiate_board(self):
