@@ -2,9 +2,9 @@
 import multiprocessing
 from boggle.grid import Grid
 from boggle.moves import Moves
-from boggle.paths import make_digraph, compute_all_paths
 from boggle.manage import (load_dictionary, export_words, display_words,
                            export_board_paths, import_board_paths)
+<<<<<<< HEAD
 
 MAX_WLEN = 10
 MIN_WLEN = 2
@@ -78,6 +78,10 @@ def do_compute_chains(params):
         all_paths.append(path)
 
     return((ori, tree, all_paths))
+=======
+from boggle.paths import do_chains_to_words, do_compute_chains
+from boggle import MAX_WLEN, MIN_WLEN
+>>>>>>> 2926aca8e45789d8ebf8ecfe427f741ad2ff645c
 
 
 def main(args):
@@ -113,14 +117,13 @@ def main(args):
     # Parse command line arguments
     x = ' '.join(args.words)
     grid = Grid(x)
+    moves = Moves(grid)
     # Check if grid moves are known, load them or compute
     board = import_board_paths(grid, maxwlen)
     if board is None or args.overwrite:
         # Unknown board, so compute moves, paths and save new board.
-        # Or force recompute.
-        moves = Moves(grid)
+        # Or force recompute
         p = multiprocessing.Pool(4)
-
         xargs = []
         for coord in grid.coords:
             xargs.append((coord, moves, maxwlen))

@@ -18,7 +18,7 @@ class Grid(object):
         grid ([['a', 'b', 'c'], [ ... ]]): grid letters
 
     Example:
-        grid = Grid('cat dog hog', 3, 3)
+        grid = Grid('cat dog hog')
 
     """
 
