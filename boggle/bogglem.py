@@ -131,7 +131,7 @@ def main(args):
 
     # Parse the results object to form set of all legal words for all origins.
     # Parse dictionary
-    dictionary = load_dictionary()
+    dictionary = load_dictionary(args.dictionary)
     all_words = do_chains_to_words(grid, board, dictionary)
 
     # Export words to a file

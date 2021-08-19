@@ -20,6 +20,8 @@ parser.add_argument('-w', '--overwrite',
 parser.add_argument('-d', '--debug', default=False,
                     help='Run interactive and return main objects.',
                     action="store_true")
+parser.add_argument('-i', '--dictionary', default=None,
+                    help='Dictionary file to use.', type=str)
 
 parser.add_argument('words', help='Add space separated words', nargs='*')
 parser.add_argument('-v', '--version', action='version',
