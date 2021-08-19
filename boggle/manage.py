@@ -4,10 +4,10 @@ import csv
 from os import path as op
 from codecs import open as copen
 
-DICT_PATH = "/usr/share/dict/words"
+DICT_NAME = "word.list"
 
 
-def load_dictionary(fpath=DICT_PATH):
+def load_dictionary(fpath=None):
     """Load the system word list.
 
     On Linux systems a default word list is included (DICT_PATH).
@@ -19,9 +19,11 @@ def load_dictionary(fpath=DICT_PATH):
         Words (set) Uppercase set of known words `dictionary`.
 
     """
-    with copen(fpath, encoding='utf-8') as f:
+    if not fpath:
+        fpath = op.join(_get_board_data_dir(), DICT_NAME)
+    with copen(fpath, encoding="utf-8") as f:
         words = f.read().splitlines()
-    return(set([x.upper().strip() for x in words]))
+    return set([x.upper().strip() for x in words])
 
 
 def export_words(all_words, fname):
@@ -41,11 +43,12 @@ def export_words(all_words, fname):
     output = []
     for wlen, words in all_words.items():
         for word, chain in words:
-            output.append({'length': wlen, 'word': word, 'path': chain})
+            output.append({"length": wlen, "word": word, "path": chain})
 
-    output.sort(key=lambda x: (x['length'], x['word']))
-    fhandle = csv.DictWriter(open(fname, mode='w'),
-                             fieldnames=["length", "word", "path"])
+    output.sort(key=lambda x: (x["length"], x["word"]))
+    fhandle = csv.DictWriter(
+        open(fname, mode="w"), fieldnames=["length", "word", "path"]
+    )
     fhandle.writeheader()
     fhandle.writerows(output)
 
@@ -63,15 +66,15 @@ def display_words(words):
 
     """
     print("{}\t{}\t{}".format("WLEN", "WORD", "PATH"))
-    print("="*80)
+    print("=" * 80)
     for line in words:
-        print("{}\t{}\t{}".format(line['length'], line['word'], line['path']))
+        print("{}\t{}\t{}".format(line["length"], line["word"], line["path"]))
 
 
 def _get_board_data_dir():
     """Return the directory for storing board data."""
     x = op.dirname(op.abspath(__file__))
-    x = op.abspath(op.join(x, 'data'))
+    x = op.abspath(op.join(x, "data"))
     return x
 
 
@@ -99,7 +102,7 @@ def export_board_paths(grid, board_data, maxwlen, ow=False):
 
     if op.exists(fname) and ow is False:
         return
-    with open(fname, 'wb') as output:
+    with open(fname, "wb") as output:
         pickle.dump(board_data, output, pickle.HIGHEST_PROTOCOL)
 
 
@@ -122,8 +125,8 @@ def import_board_paths(grid, maxwlen):
     fname = op.join(_get_board_data_dir(), fname)
 
     if op.exists(fname):
-        with open(fname, 'rb') as input:
+        with open(fname, "rb") as input:
             board_data = pickle.load(input)
-        return (board_data)
+        return board_data
 
     return None

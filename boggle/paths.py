@@ -13,13 +13,11 @@ def make_digraph(orig, tree, wlen):
     print("ori: {}\ttier: {}\tnode: {}".format(orig, 0, len(g)))
     for tier in range(1, wlen):
 
-        parent_nodes = [(n, d) for n, d in g.nodes(data=True)
-                        if d['tier'] == tier-1]
+        parent_nodes = [(n, d) for n, d in g.nodes(data=True) if d["tier"] == tier - 1]
 
         for pu, pd in parent_nodes:
 
-            children = [cc for (pc, cc) in tree.tree['edges']
-                        if pc == pd['coord']]
+            children = [cc for (pc, cc) in tree.tree["edges"] if pc == pd["coord"]]
 
             while children:
                 idx += 1
@@ -30,23 +28,22 @@ def make_digraph(orig, tree, wlen):
 
                 ancest = nx.algorithms.dag.ancestors(g, idx)
                 ancest = list(ancest) + [idx]
-                if len(ancest) != len(set([g.nodes[x]['coord']
-                                           for x in ancest])):
+                if len(ancest) != len(set([g.nodes[x]["coord"] for x in ancest])):
                     g.remove_node(idx)
 
         print("ori: {}\ttier: {}\tnode: {}".format(orig, tier, len(g)))
 
-    return(g)
+    return g
 
 
 def compute_all_paths(gx):
     """Brute force compute all paths by bactracking method."""
-    wlen = max([d for _, d in list(gx.nodes.data('tier'))])
-    tns = [n for n, d in gx.nodes.data('tier') if d == wlen]
+    wlen = max([d for _, d in list(gx.nodes.data("tier"))])
+    tns = [n for n, d in gx.nodes.data("tier") if d == wlen]
 
     for n in tns:
         path = list(nx.algorithms.dag.ancestors(gx, n)) + [n]
-        yield(sorted(path))
+        yield (sorted(path))
 
 
 def do_chains_to_words(grid, all_paths, dictionary):
@@ -75,12 +72,12 @@ def do_chains_to_words(grid, all_paths, dictionary):
     for ori, tree, paths in all_paths:
         for path in paths:
             # grid path for word
-            chain = [tree.nodes[i]['coord'] for i in path]
+            chain = [tree.nodes[i]["coord"] for i in path]
             # add words, chains to growing dictionary
             while len(chain) > MIN_WLEN:
                 # word from chain
                 word = [grid[i] for i in chain]
-                word = ''.join(word)
+                word = "".join(word)
                 if "*" not in word and word.upper() in dictionary:
                     wordlen = len(word)
                     if wordlen not in ori_words:
@@ -116,4 +113,4 @@ def do_compute_chains(params):
     for path in compute_all_paths(tree):
         all_paths.append(path)
 
-    return((ori, tree, all_paths))
+    return (ori, tree, all_paths)

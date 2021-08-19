@@ -29,10 +29,38 @@ class Test(unittest.TestCase):
 
     def test_tlw_00(self):
         """Test all three letter words from 0,0."""
-        expect = set(['hod', 'gog', 'cod', 'tad', 'tog', 'oho', 'ago', 'dog',
-                      'cat', 'hot', 'dot', 'cot', 'goa', 'oat', 'ado', 'tod',
-                      'god', 'got', 'tag', 'goo', 'coo', 'doc', 'cog', 'tao',
-                      'cad', 'gad', 'hog', 'too'])
+        expect = set(
+            [
+                "hod",
+                "gog",
+                "cod",
+                "tad",
+                "tog",
+                "oho",
+                "ago",
+                "dog",
+                "cat",
+                "hot",
+                "dot",
+                "cot",
+                "goa",
+                "oat",
+                "ado",
+                "tod",
+                "god",
+                "got",
+                "tag",
+                "goo",
+                "coo",
+                "doc",
+                "cog",
+                "tao",
+                "cad",
+                "gad",
+                "hog",
+                "too",
+            ]
+        )
         observed = {y[0] for y in self.all_words[3]}
 
         self.assertSetEqual(expect, observed)

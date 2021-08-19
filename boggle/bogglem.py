@@ -2,8 +2,14 @@
 import multiprocessing
 from boggle.grid import Grid
 from boggle.moves import Moves
-from boggle.manage import (load_dictionary, export_words, display_words,
-                           export_board_paths, import_board_paths)
+from boggle.manage import (
+    load_dictionary,
+    export_words,
+    display_words,
+    export_board_paths,
+    import_board_paths,
+)
+from boggle.paths import make_digraph, compute_all_paths
 
 
 MAX_WLEN = 10
@@ -36,12 +42,12 @@ def do_chains_to_words(grid, all_paths, dictionary):
     for ori, tree, paths in all_paths:
         for path in paths:
             # grid path for word
-            chain = [tree.nodes[i]['coord'] for i in path]
+            chain = [tree.nodes[i]["coord"] for i in path]
             # add words, chains to growing dictionary
             while len(chain) > MIN_WLEN:
                 # word from chain
                 word = [grid[i] for i in chain]
-                word = ''.join(word)
+                word = "".join(word)
                 if "*" not in word and word.upper() in dictionary:
                     wordlen = len(word)
                     if wordlen not in ori_words:
@@ -77,7 +83,7 @@ def do_compute_chains(params):
     for path in compute_all_paths(tree):
         all_paths.append(path)
 
-    return((ori, tree, all_paths))
+    return (ori, tree, all_paths)
 
 
 def main(args):
@@ -111,7 +117,7 @@ def main(args):
     assert maxwlen <= MAX_WLEN, "Maximum word length exceeds limit."
 
     # Parse command line arguments
-    x = ' '.join(args.words)
+    x = " ".join(args.words)
     grid = Grid(x)
     moves = Moves(grid)
     # Check if grid moves are known, load them or compute
@@ -143,7 +149,7 @@ def main(args):
 
     # Draw boogle board if requested
     if args.graph:
-        fn = args.filename.replace('.tsv', '_board.png')
+        fn = args.filename.replace(".tsv", "_board.png")
         moves.grid = grid
         moves.draw_board(fn)
 

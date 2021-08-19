@@ -9,9 +9,7 @@ from boggle.tree import Tree
 class Test(unittest.TestCase):
     """Define generic testcase for boggle."""
 
-    grid = Grid([['c', 'a', 't'],
-                 ['d', 'o', 'g'],
-                 ['h', 'o', 'g']], 3, 3)
+    grid = Grid([["c", "a", "t"], ["d", "o", "g"], ["h", "o", "g"]], 3, 3)
 
     def test_instantiate_tree(self):
         """Test build tree for single fixed grid."""

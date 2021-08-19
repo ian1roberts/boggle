@@ -29,18 +29,18 @@ class Grid(object):
 
     def __str__(self):
         """Print letter board in coordinate space."""
-        txt = ''
-        for y in range(self.nrow-1, -1, -1):
+        txt = ""
+        for y in range(self.nrow - 1, -1, -1):
             row = self.grid[y]
-            a = ''
+            a = ""
             for x, l in enumerate(row):
-                a += '{}({}) '.format((x, y), self[(x, y)])
-            txt += (a + '\n')
-        return(txt)
+                a += "{}({}) ".format((x, y), self[(x, y)])
+            txt += a + "\n"
+        return txt
 
     def __len__(self):
         """Return number of characters in grid."""
-        return (len(self._chars))
+        return len(self._chars)
 
     def __getitem__(self, key):
         """Return letter item given (x, y) coordinate."""
@@ -65,7 +65,7 @@ class Grid(object):
         self._chars = letters.replace(" ", "")
         self.grid = []
         items = letters.split(" ")
-        self.nrow = len(items)     # maps to y
+        self.nrow = len(items)  # maps to y
         self.ncol = len(items[0])  # maps to x
 
         for item in reversed(items):

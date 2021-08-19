@@ -9,9 +9,7 @@ from boggle.paths import Paths
 class Test(unittest.TestCase):
     """Define generic testcase for boggle."""
 
-    grid = Grid([['c', 'a', 't'],
-                 ['d', 'o', 'g'],
-                 ['h', 'o', 'g']], 3, 3)
+    grid = Grid([["c", "a", "t"], ["d", "o", "g"], ["h", "o", "g"]], 3, 3)
 
     def test_instantiate_paths_fixed(self):
         """Test build paths object for fixed wlen."""

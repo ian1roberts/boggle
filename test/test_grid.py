@@ -13,10 +13,10 @@ class Test(unittest.TestCase):
         # input
         nrow = 3
         ncol = 3
-        letters = 'cat dog hog'
+        letters = "cat dog hog"
 
         # expected
-        expected = [['c', 'a', 't'], ['d', 'o', 'g'], ['h', 'o', 'g']]
+        expected = [["c", "a", "t"], ["d", "o", "g"], ["h", "o", "g"]]
         observed = Grid(letters, nrow, ncol)
 
         self.assertListEqual(observed.grid, expected)

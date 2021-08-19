@@ -5,19 +5,19 @@ import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
 import matplotlib.pyplot as plt
 
-#Examine moves graphs
+# Examine moves graphs
 pos = dict((n, n) for n in moves.graph.nodes())
 nx.draw_networkx(moves.graph, pos=pos, labels=grid.board, node_size=900)
-plt.savefig('hierarch1.png')
+plt.savefig("hierarch1.png")
 plt.close()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from networkx.drawing.nx_agraph import graphviz_layout
     from boggle.grid import Grid
     from boggle.moves import Moves
 
-    grid = Grid('sho acw sed')
+    grid = Grid("sho acw sed")
     moves = Moves(grid)
 
     xy_tree = make_digraph((0, 2), grid, moves, 9)
@@ -33,7 +33,6 @@ if __name__ == '__main__':
     #         node_size=350, font_size=6)
     # plt.savefig('nx_g_test.png')
     # plt.close()
-
 
 
 ##
@@ -78,9 +77,10 @@ if __name__ == '__main__':
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
 import matplotlib.pyplot as plt
+
 tree = c_data[(0, 2)]
-plt.title('(0, 2) sho acw sed --> showcased')
-pos = graphviz_layout(tree, prog='dot')
+plt.title("(0, 2) sho acw sed --> showcased")
+pos = graphviz_layout(tree, prog="dot")
 nx.draw(tree, pos=pos, with_labels=True, arrows=True, node_size=350, font_size=6)
-plt.savefig('nx_filt_origin.png')
+plt.savefig("nx_filt_origin.png")
 plt.close()

@@ -9,28 +9,27 @@ from setuptools import setup, find_packages
 __version__ = 0.1
 
 here = path.abspath(path.dirname(__file__))
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(path.join(here, "README.rst"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name='boggle',
-    version='%s' % __version__,
-    author='Ian Roberts',
-    author_email='ian.roberts@cantab.net',
-    packages=find_packages(exclude=['test*', 'docs']),
+    name="boggle",
+    version="%s" % __version__,
+    author="Ian Roberts",
+    author_email="ian.roberts@cantab.net",
+    packages=find_packages(exclude=["test*", "docs"]),
     include_package_data=True,
-    license='LICENSE.txt',
+    license="LICENSE.txt",
     description=long_description,
     classifiers=[
-        'Development Status :: 3- Alpha',
-        'Intended Audience :: Developers',
-        'Topic :: Word Games',
-        'Programming Language :: Python :: 3',
+        "Development Status :: 3- Alpha",
+        "Intended Audience :: Developers",
+        "Topic :: Word Games",
+        "Programming Language :: Python :: 3",
     ],
-    install_requires=['networkx', 'nose'
-                      ],
+    install_requires=["networkx", "nose"],
     entry_points={
-        'console_scripts': ['boggle=boggle.__main__:run_boggle'],
-        },
-    test_suite='unittest'
+        "console_scripts": ["boggle=boggle.__main__:run_boggle"],
+    },
+    test_suite="unittest",
 )

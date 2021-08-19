@@ -8,8 +8,9 @@ from boggle.bogglem import main
 boggle cat dog hog
 """
 
+
 class Args(object):
-    words = ['cat', 'dog', 'hog']
+    words = ["cat", "dog", "hog"]
     maxwordlength = 9
     nodisplay = False
     graph = True

@@ -7,9 +7,16 @@ from uuid import uuid4
 class Moves(object):
     """Make `Moves` class with origin, wordlength number of rows, cols."""
 
-    COMPASS = {'n': (0, 1), 'ne': (1, 1), 'e': (1, 0),  'se': (1, -1),
-               's': (0, -1),  'sw': (-1, -1), 'w': (-1, 0), 'nw': (-1, 1)
-               }
+    COMPASS = {
+        "n": (0, 1),
+        "ne": (1, 1),
+        "e": (1, 0),
+        "se": (1, -1),
+        "s": (0, -1),
+        "sw": (-1, -1),
+        "w": (-1, 0),
+        "nw": (-1, 1),
+    }
 
     def __init__(self, grid, export=False):
         """Instantiate class."""
@@ -70,24 +77,22 @@ class Moves(object):
         """Build a tree of word stems."""
         # Initiate graph with root node. Index is [tier][next moves]
 
-        self.tree = {'nodes': [x for x in self.grid],
-                     'edges': []}
-        for node in self.tree['nodes']:
+        self.tree = {"nodes": [x for x in self.grid], "edges": []}
+        for node in self.tree["nodes"]:
             moves = self._next_step(node)
             for move in moves.values():
-                self.tree['edges'].append((node, move))
+                self.tree["edges"].append((node, move))
 
     def build_paths_graph(self):
         """Optimized path building for improved speed."""
         self.graph = nx.grid_2d_graph(self.grid.nrow, self.grid.ncol)
-        self.graph.add_nodes_from(self.tree['nodes'])
-        self.graph.add_edges_from(self.tree['edges'])
+        self.graph.add_nodes_from(self.tree["nodes"])
+        self.graph.add_edges_from(self.tree["edges"])
 
-    def draw_board(self, fn='boggle_board.png'):
+    def draw_board(self, fn="boggle_board.png"):
         """Export a PNG image of the boggle board."""
         pos = dict((n, n) for n in self.graph.nodes())
-        nx.draw_networkx(self.graph, pos=pos, labels=self.grid.board,
-                         node_size=900)
+        nx.draw_networkx(self.graph, pos=pos, labels=self.grid.board, node_size=900)
         png_fn = "{}_{}".format(str(uuid4())[:6], fn)
         print(png_fn)
         plt.savefig(png_fn)
